@@ -1,10 +1,12 @@
 import React, {useState, useCallback, useReducer, useEffect} from 'react';
 import {
   Switch,
-  Route
+  Route,
+  NavLink
 } from "react-router-dom";
 import debounce from './helpers/debounce'
 import updateResults from './helpers/updateResults'
+import {login} from './helpers/authentication'
 
 import './App.css';
 
@@ -24,6 +26,15 @@ export type State = {
   results: Movie[]
   nominations: Movie[]
   error: string
+}
+
+export type Login = {
+  email: string
+  password: string
+}
+
+export type Register = Login & {
+  username: string
 }
 
 // TO DO: define action type
@@ -64,6 +75,11 @@ function App() {
   const [state, dispatch] = useReducer(reducer, initialState)
   // SEARCH INPUT
   const [value, setValue] = useState<string>('')
+  // LOGIN INPUTS
+  const [form, setForm] = useState<Login>({
+    email: '',
+    password: ''
+  })
   
   // QUERY API
   async function search(term: string) {
@@ -98,14 +114,49 @@ function App() {
   useEffect(() => {
     dispatch({type: 'REFRESH_RESULTS'})
   }, [state.nominations])
+
+  // on sign-in: 
+    // add nominations to state and local storage
+    // add token to local storage
+  
+  // LOGIN FORMS
+  const onFormChange = (e:any, type: string) => {
+    const {value: nextValue} = e.target
+    setForm(prev => ({...prev, [type]: nextValue}))
+  }
   
   return (
     <main className="App">
-      <div className='nav'>nav</div>
+      <div className='nav' style={{textAlign: 'right', padding: '5px'}}>
+        <NavLink to='/login' style={{display: 'inline-block'}}>Login</NavLink>
+        &nbsp;
+        <NavLink to='/register' style={{display: 'inline-block'}}>Register</NavLink>
+      </div>
       {state.error && <p style={{color: 'red'}}>{state.error}</p>}
       <Switch>
         <Route path='/login'>
-          <div className='login'>login</div>
+          <div className='login'>
+            <h1>login</h1>
+            <form onSubmit={async e => {
+              e.preventDefault();
+              const result = await login(form)
+              console.log(result)
+            }}>
+              <input type='email' value={form.email} onChange={e => onFormChange(e, 'email')} placeholder='email'/>
+              <input type='password' value={form.password} onChange={e => onFormChange(e, 'password')} placeholder='password'/>
+              <button type='submit'>Submit</button>
+            </form>
+            <div>
+              <h2>use for testing</h2>
+              <p>email: test@email.com</p>
+              <p>password: fakepassword</p>
+            </div>
+          </div>
+        </Route>
+        <Route path='/register'>
+          <div className='register'>
+            <h1>register</h1>
+          </div>
         </Route>
         <Route path='/'>
             <div className='search'>
@@ -128,7 +179,7 @@ function App() {
               <ul>
                 {state.nominations.map((movie: Movie, i: number) => 
                   <li key={i}>
-                    {movie.Title}
+                    {`${movie.Title}, ${movie.Year}`}
                     <button onClick={() => dispatch({type: 'REMOVE_NOMINATION', nomination: movie})}>remove</button>
                   </li>
                 )}
