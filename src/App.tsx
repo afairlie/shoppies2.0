@@ -2,7 +2,8 @@ import React, {useState, useCallback, useReducer, useEffect} from 'react';
 import {
   Switch,
   Route,
-  NavLink
+  NavLink,
+  useHistory
 } from "react-router-dom";
 import debounce from './helpers/debounce'
 import updateResults from './helpers/updateResults'
@@ -26,6 +27,7 @@ export type State = {
   results: Movie[]
   nominations: Movie[]
   error: string
+  loggedIn: string | null
 }
 
 export type Login = {
@@ -57,6 +59,15 @@ function reducer(state: State, action: any): State {
     case 'REMOVE_NOMINATION': {
       return {...state, nominations: state.nominations.filter((m: Movie) => m.imdbID !== action.nomination.imdbID)}
     }
+    case 'REPLACE_NOMINATIONS': {
+      return {...state, nominations: action.nominations}
+    }
+    case 'SET_LOGIN': {
+      return {...state, loggedIn: action.loggedIn}
+    }
+    case 'SET_ERROR': {
+      return {...state, error: action.error}
+    }
     case 'CLEAR_ERROR': {
       return {...state, error: ''}
     }
@@ -68,11 +79,13 @@ function reducer(state: State, action: any): State {
 const initialState: State = {
   results: [],
   nominations: [],
-  error: ''
+  error: '',
+  loggedIn: ''
 }
 
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState)
+  let history = useHistory()
   // SEARCH INPUT
   const [value, setValue] = useState<string>('')
   // LOGIN INPUTS
@@ -89,7 +102,24 @@ function App() {
       const parsed = await result.json()
       dispatch({type: 'SET_RESULTS', results: parsed.Search || []})
     } catch (error) {
-      throw new Error(error)
+      dispatch({type: 'SET_ERROR', error})
+    }
+  }
+
+  async function getMovie(id: string) {
+    try {
+      const result: any = await fetch(`https://www.omdbapi.com/?apikey=${process.env.REACT_APP_OMDB}&i=${id}&type=movie`)
+      const parsed = await result.json()
+      return {
+        Poster: parsed.Poster,
+        Title: parsed.Title,
+        Type: parsed.Type,
+        Year: parsed.Year,
+        imdbID: parsed.imdbID,
+        nominated: true,
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -127,10 +157,28 @@ function App() {
   
   return (
     <main className="App">
-      <div className='nav' style={{textAlign: 'right', padding: '5px'}}>
-        <NavLink to='/login' style={{display: 'inline-block'}}>Login</NavLink>
-        &nbsp;
-        <NavLink to='/register' style={{display: 'inline-block'}}>Register</NavLink>
+      <div className='nav' style={{display: 'flex', justifyContent: 'space-between', padding: '5px'}}>
+        <div>
+          <NavLink to='/'>Shoppies 2.0</NavLink>
+        </div>
+        <div>
+          {state.loggedIn ?
+          <>
+            <span style={{verticalAlign: '-2px'}}>@{state.loggedIn}</span>
+            &nbsp;
+            <button onClick={() => {
+              localStorage.removeItem('nominations')
+              localStorage.removeItem('token')
+              dispatch({type: 'SET_LOGIN', loggedIn: null})
+              dispatch({type: 'REPLACE_NOMINATIONS', nominations: []})
+            }}>Logout</button>
+          </>
+          : <>
+            <NavLink to='/login' style={{display: 'inline-block'}}>Login</NavLink>
+            &nbsp;
+            <NavLink to='/register' style={{display: 'inline-block'}}>Register</NavLink>
+          </>}
+        </div>
       </div>
       {state.error && <p style={{color: 'red'}}>{state.error}</p>}
       <Switch>
@@ -139,14 +187,33 @@ function App() {
             <h1>login</h1>
             <form onSubmit={async e => {
               e.preventDefault();
-              const result = await login(form)
-              console.log(result)
+              try {
+                const result = await login(form)
+                localStorage.setItem('token', result.token)
+                if (result.nominations) {
+                  try {
+                    const m1 = await getMovie(result.nominations['1'])
+                    const m2 = await getMovie(result.nominations['2'])
+                    const m3 = await getMovie(result.nominations['3'])
+                    const m4 = await getMovie(result.nominations['4'])
+                    const m5 = await getMovie(result.nominations['5'])
+                    dispatch({type: 'REPLACE_NOMINATIONS', nominations: [m1, m2, m3, m4, m5]})
+                  } catch (error) {
+                    dispatch({type: 'SET_ERROR', error: error.Error})
+                  }
+                  localStorage.setItem('nominations', JSON.stringify(result.nominations))
+                }
+                dispatch({type: 'SET_LOGIN', loggedIn: result.username})
+                history.push('/')
+              } catch (error) {
+                dispatch({type: 'SET_ERROR', error: error.message.error})
+              }
             }}>
               <input type='email' value={form.email} onChange={e => onFormChange(e, 'email')} placeholder='email'/>
               <input type='password' value={form.password} onChange={e => onFormChange(e, 'password')} placeholder='password'/>
               <button type='submit'>Submit</button>
             </form>
-            <div>
+            <div style={{backgroundColor: 'lightgrey', maxWidth: '350px', padding: '20px', margin: 'auto', marginTop: '20px'}}>
               <h2>use for testing</h2>
               <p>email: test@email.com</p>
               <p>password: fakepassword</p>
@@ -159,17 +226,17 @@ function App() {
           </div>
         </Route>
         <Route path='/'>
-            <div className='search'>
+            <div className='search' style={{textAlign: 'center'}}>
               <h1>search</h1>
-              <input value={value} onChange={handleChange} placeholder='search a film'/>
+              <input value={value} onChange={handleChange} placeholder='search a film' style={{width: '100%', maxWidth: '500px', margin: '0 5px'}} />
             </div>
             <div className='results'>
               <h1>results</h1>
               <ul>
                 {state.results.map((movie: Movie, i: number) => 
-                  <li key={i}>
-                    {`${movie.Title}, ${movie.Year}`}
-                    <button disabled={!!movie.nominated} onClick={() => dispatch({type: 'ADD_NOMINATION', nomination: movie})}>nominate</button>
+                  <li key={i} style={{display: 'flex', justifyContent: 'space-between', maxWidth: '500px', padding: '2px', margin: 'auto'}}>
+                    <span style={{display: 'inline-block'}}>{`${movie.Title}, ${movie.Year}`}</span>
+                    <button disabled={movie.nominated} onClick={() => dispatch({type: 'ADD_NOMINATION', nomination: movie})}>nominate</button>
                   </li>
                 )}
               </ul>
@@ -178,8 +245,8 @@ function App() {
               <h1>nominations</h1>
               <ul>
                 {state.nominations.map((movie: Movie, i: number) => 
-                  <li key={i}>
-                    {`${movie.Title}, ${movie.Year}`}
+                  <li key={i} style={{display: 'flex', justifyContent: 'space-between', maxWidth: '500px', padding: '2px', margin: 'auto'}}>
+                    <span style={{display: 'inline-block'}}>{`${movie.Title}, ${movie.Year}`}</span>
                     <button onClick={() => dispatch({type: 'REMOVE_NOMINATION', nomination: movie})}>remove</button>
                   </li>
                 )}
