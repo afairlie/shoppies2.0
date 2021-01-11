@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import debounce from './helpers/debounce'
 import updateResults from './helpers/updateResults'
-import {login} from './helpers/authentication'
+import {login, refreshLogin, decodeToken} from './helpers/authentication'
 
 import './App.css';
 
@@ -119,7 +119,7 @@ function App() {
         nominated: true,
       }
     } catch (error) {
-      console.log(error)
+      return error
     }
   }
 
@@ -145,11 +145,30 @@ function App() {
     dispatch({type: 'REFRESH_RESULTS'})
   }, [state.nominations])
 
-  // on sign-in: 
-    // add nominations to state and local storage
-    // add token to local storage
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      refreshLogin(token)
+      .then(async result => {
+        const decoded = await decodeToken(token)
+        dispatch({type: 'SET_LOGIN', loggedIn: decoded.username})
+
+        if (result.nominations) {
+          const m1 = await getMovie(result.nominations['1'])
+          const m2 = await getMovie(result.nominations['2'])
+          const m3 = await getMovie(result.nominations['3'])
+          const m4 = await getMovie(result.nominations['4'])
+          const m5 = await getMovie(result.nominations['5'])
+          dispatch({type: 'REPLACE_NOMINATIONS', nominations: [m1, m2, m3, m4, m5]})
+        }
+      })
+      .catch(e => {
+          dispatch({type: 'SET_ERROR', error: e.data.error})
+      })
+    }
+  }, [])
   
-  // LOGIN FORMS
+  // LOGIN FORM
   const onFormChange = (e:any, type: string) => {
     const {value: nextValue} = e.target
     setForm(prev => ({...prev, [type]: nextValue}))
@@ -204,6 +223,7 @@ function App() {
                   localStorage.setItem('nominations', JSON.stringify(result.nominations))
                 }
                 dispatch({type: 'SET_LOGIN', loggedIn: result.username})
+                setForm({email: '', password: ''})
                 history.push('/')
               } catch (error) {
                 dispatch({type: 'SET_ERROR', error: error.message.error})
