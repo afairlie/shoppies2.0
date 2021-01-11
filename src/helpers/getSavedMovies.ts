@@ -17,6 +17,7 @@ async function getMovie(id: string) {
     }
   }
 
+//   TO DO: set type for result
 export default async function getSavedMovies(result:any, dispatch: Dispatch) {
     try {
         const m1 = await getMovie(result.nominations['1'])
@@ -25,6 +26,7 @@ export default async function getSavedMovies(result:any, dispatch: Dispatch) {
         const m4 = await getMovie(result.nominations['4'])
         const m5 = await getMovie(result.nominations['5'])
         dispatch({type: 'REPLACE_NOMINATIONS', data: [m1, m2, m3, m4, m5]})
+        localStorage.setItem('nominations', JSON.stringify(result.nominations))
       } catch (error) {
         dispatch({type: 'SET_ERROR', data: error.Error})
       }

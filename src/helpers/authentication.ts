@@ -25,7 +25,6 @@ export async function login(e: any, form: Login, setForm: React.Dispatch<React.S
         localStorage.setItem('token', result.token)
         if (result.nominations) {
         getSavedMovies(result, dispatch)
-        localStorage.setItem('nominations', JSON.stringify(result.nominations))
         dispatch({type: 'SET_SAVED', data: 'saved'})
         }
         dispatch({type: 'SET_LOGIN', data: result.username})
@@ -36,7 +35,7 @@ export async function login(e: any, form: Login, setForm: React.Dispatch<React.S
     }
 }
 
-export async function refreshLogin(token: string) {
+export async function checkLogin(token: string) {
     const response = await fetch(NOMINATIONS, {
         method: 'GET',
         headers: {

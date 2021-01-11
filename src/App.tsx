@@ -9,7 +9,7 @@ import {
 // HELPERS
 import debounce from './helpers/debounce'
 import updateResults from './helpers/updateResults'
-import {login, refreshLogin, decodeToken, logout} from './helpers/authentication'
+import {login, checkLogin, decodeToken, logout} from './helpers/authentication'
 import getSavedMovies from './helpers/getSavedMovies'
 
 import './App.css';
@@ -79,6 +79,7 @@ function reducer(state: State, action: {type: ActionType, data?: any}): State {
       return {...state, nominations: action.data}
     }
     case 'SET_SAVED': {
+      localStorage.setItem('mode', action.data)
       return {...state, saved: action.data}
     }
     case 'SET_LOGIN': {
@@ -159,16 +160,19 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem('token')
     if (token) {
-      refreshLogin(token)
+      checkLogin(token)
       .then(async result => {
         const decoded = await decodeToken(token)
         dispatch({type: 'SET_LOGIN', data: decoded.username})
-
+        dispatch({type: 'SET_SAVED', data: localStorage.getItem('mode')})
         if (result.nominations) {
           getSavedMovies(result, dispatch)
         }
       })
       .catch(e => {
+          if (e.data.error === 'Expired Token') {
+            localStorage.removeItem('token')
+          }
           dispatch({type: 'SET_ERROR', data: e.data.error})
       })
     }
@@ -230,14 +234,15 @@ function App() {
             </div>
             <div className='results'>
               <h1>results</h1>
-              <ul>
+              {state.results.length > 0 && <ul>
                 {state.results.map((movie: Movie, i: number) => 
                   <li key={i} style={{display: 'flex', justifyContent: 'space-between', maxWidth: '500px', padding: '2px', margin: 'auto'}}>
                     <span style={{display: 'inline-block'}}>{`${movie.Title}, ${movie.Year}`}</span>
                     <button disabled={movie.nominated} onClick={() => dispatch({type: 'ADD_NOMINATION', data: movie})}>nominate</button>
                   </li>
                 )}
-              </ul>
+              </ul>}
+              {/* {state.results.length === 0 && value.length > 0 && <p>no results for "{value}"</p>} */}
             </div>
             <div className='nominations'>
               <h1>nominations</h1>
@@ -249,18 +254,48 @@ function App() {
                   </li>
                 )}
               </ul>
+              <div style={{display: 'flex', justifyContent: 'space-between', maxWidth: '500px', margin: 'auto'}}>
               {state.saved === 'saved' && 
-                <div style={{display: 'flex', justifyContent: 'space-between', maxWidth: '500px', margin: 'auto'}}>
+                  <>
                   <span style={{display: 'inline-block'}}>Your nominations are saved, click to edit: </span>
                   <button onClick={() => dispatch({type: 'SET_SAVED', data: 'edit'})}>edit</button>
-                </div>
+                  </>
               }
-              {state.saved !== 'saved' && state.nominations.length === 5 &&
-                <div style={{display: 'flex', justifyContent: 'space-between', maxWidth: '500px', margin: 'auto'}}>
+              {!state.loggedIn && state.saved !== 'saved' && state.nominations.length === 5 && 
+                <>
+                  {/* login & save these noms - OR - login and retrieve old noms */}
+                  <span style={{display: 'inline-block'}}>Login to save your nominations </span>
+                  <div>
+                    <button style={{margin: '0 10px'}}>save these noms</button>
+                    <button  style={{marginLeft: '10px'}}>retrieve previous</button>
+                  </div>
+                </>}
+              {state.loggedIn && state.saved !== 'saved' && state.nominations.length === 5 &&  
+                <>
                   <span style={{display: 'inline-block'}}>Click to save your nominations: </span>
-                  <button onClick={() => dispatch({type: 'SET_SAVED', data: 'saved'})}>save</button>
-                </div>
+                  <button onClick={async () => {
+                      const token = localStorage.getItem('token')
+                      const formattedNoms: any = {}
+                      state.nominations.forEach((m, i) => formattedNoms[`${i+1}`] = m.imdbID)
+                      try {
+                        let results = await fetch('http://localhost:3001/nominations', {
+                          method: 'POST',
+                          headers: {
+                              'Content-Type': 'application/json',
+                              'Authorization': 'Bearer ' + token
+                          },
+                          body: JSON.stringify(formattedNoms)
+                        })
+                        results = await results.json()
+                        dispatch({type: 'SET_SAVED', data: 'saved'})
+                        getSavedMovies(results, dispatch)
+                      } catch (error) {
+                        throw new Error(error.status)
+                      }
+                  }}>save</button>
+                </>
               }
+              </div>
             </div>
         </Route>
       </Switch>
