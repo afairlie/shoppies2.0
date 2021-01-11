@@ -252,23 +252,24 @@ function App() {
                   </li>
                 )}
               </ul>
-              <div style={{display: 'flex', justifyContent: 'space-between', maxWidth: '500px', margin: 'auto'}}>
+              {state.nominations.length === 5 && 
+              <div style={{display: 'flex', justifyContent: 'space-between', maxWidth: '500px', margin: 'auto', backgroundColor: 'yellow', padding: '5px'}}>
               {state.saved === 'saved' && 
                   <>
                   <span style={{display: 'inline-block'}}>Your nominations are saved, click to edit: </span>
                   <button onClick={() => dispatch({type: 'SET_SAVED', data: 'edit'})}>edit</button>
                   </>
               }
-              {!state.loggedIn && state.saved !== 'saved' && state.nominations.length === 5 && 
+              {!state.loggedIn && state.saved !== 'saved' && 
                 <>
                   {/* login & save these noms - OR - login and retrieve old noms */}
-                  <span style={{display: 'inline-block'}}>Login to save your nominations </span>
+                  <span style={{display: 'inline-block', textAlign: 'left'}}>You're not logged in. Would you like to save these nominations? </span>
                   <div>
-                    <button style={{margin: '0 10px'}}>save these noms</button>
-                    <button  style={{marginLeft: '10px'}}>retrieve previous</button>
+                    <button>save new</button>
+                    {/* <button  style={{marginLeft: '10px'}}>retrieve saved</button> */}
                   </div>
                 </>}
-              {state.loggedIn && state.saved !== 'saved' && state.nominations.length === 5 &&  
+              {state.loggedIn && state.saved !== 'saved' &&  
                 <>
                   <span style={{display: 'inline-block'}}>Click to save your nominations: </span>
                   <button onClick={async () => {
@@ -293,7 +294,7 @@ function App() {
                   }}>save</button>
                 </>
               }
-              </div>
+              </div>}
             </div>
         </Route>
       </Switch>
