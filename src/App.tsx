@@ -45,7 +45,8 @@ export type State = {
   saved: 'saved' | 'editing' | null
 }
 
-export type ActionType = 'SET_RESULTS' | 'REFRESH_RESULTS' | 'ADD_NOMINATION' | 'REMOVE_NOMINATION' | 'REPLACE_NOMINATIONS' | 'SET_SAVED' | 'SET_LOGIN' | 'SET_BANNER' | 'SET_ERROR'
+export type ActionType = 'SET_RESULTS' | 'REFRESH_RESULTS' | 'ADD_NOMINATION' | 'REMOVE_NOMINATION' | 'REPLACE_NOMINATIONS' | 
+'SET_SAVED' | 'SET_LOGIN' | 'SET_BANNER' | 'SET_ERROR'
 
 export type Dispatch =  React.Dispatch<{
   type: ActionType;
@@ -150,12 +151,9 @@ function App() {
   useEffect(() => {
     if (state.nominations.length === 5) {
       dispatch({type: 'SET_BANNER', data: "Congratulations! You've nominated 5 films!"})
-      if (state.saved === 'saved') {
-        // show edit button, disable all remove
-      }
     }
     dispatch({type: 'REFRESH_RESULTS'})
-  }, [state.nominations, state.saved])
+  }, [state.nominations])
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -278,7 +276,7 @@ function App() {
                       const formattedNoms: any = {}
                       state.nominations.forEach((m, i) => formattedNoms[`${i+1}`] = m.imdbID)
                       try {
-                        let results = await fetch('http://localhost:3001/nominations', {
+                        let results = await fetch('https://shoppy-awards-api.herokuapp.com/nominations', {
                           method: 'POST',
                           headers: {
                               'Content-Type': 'application/json',

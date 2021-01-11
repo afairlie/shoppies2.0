@@ -1,8 +1,8 @@
 import type {Dispatch, Login} from '../App'
 import getSavedMovies from './getSavedMovies'
 
-const LOGIN = `http://localhost:3001/login`
-const NOMINATIONS = `http://localhost:3001/nominations`
+const LOGIN = `https://shoppy-awards-api.herokuapp.com/login`
+const NOMINATIONS = `https://shoppy-awards-api.herokuapp.com/nominations`
 
 async function apiLogin({email, password}: {email: string, password: string}) {
     const response = await fetch(LOGIN, {
@@ -31,7 +31,7 @@ export async function login(e: any, form: Login, setForm: React.Dispatch<React.S
         setForm({email: '', password: ''})
         history.push('/')
     } catch (error) {
-        dispatch({type: 'SET_ERROR', data: error.message.error})
+        dispatch({type: 'SET_ERROR', data: error.data.error})
     }
 }
 
