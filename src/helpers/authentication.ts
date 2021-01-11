@@ -1,7 +1,10 @@
+import type {Dispatch, Login} from '../App'
+import getSavedMovies from './getSavedMovies'
+
 const LOGIN = `http://localhost:3001/login`
 const NOMINATIONS = `http://localhost:3001/nominations`
 
-export async function login({email, password}: {email: string, password: string}) {
+async function apiLogin({email, password}: {email: string, password: string}) {
     const response = await fetch(LOGIN, {
       method: 'POST',
       headers: {
@@ -9,10 +12,28 @@ export async function login({email, password}: {email: string, password: string}
       },
       body: JSON.stringify({email, password})
     })
-    const message = await response.json()
+    const data = await response.json()
     // get token back or error status
-    return response.status === 200 ? Promise.resolve(message) 
-      : Promise.reject({status: response.status, message})
+    return response.status === 200 ? Promise.resolve(data) 
+      : Promise.reject({status: response.status, data})
+}
+
+export async function login(e: any, form: Login, setForm: React.Dispatch<React.SetStateAction<Login>>, dispatch: Dispatch, history: any) {
+    e.preventDefault();
+    try {
+        const result = await apiLogin(form)
+        localStorage.setItem('token', result.token)
+        if (result.nominations) {
+        getSavedMovies(result, dispatch)
+        localStorage.setItem('nominations', JSON.stringify(result.nominations))
+        dispatch({type: 'SET_SAVED', data: 'saved'})
+        }
+        dispatch({type: 'SET_LOGIN', data: result.username})
+        setForm({email: '', password: ''})
+        history.push('/')
+    } catch (error) {
+        dispatch({type: 'SET_ERROR', data: error.message.error})
+    }
 }
 
 export async function refreshLogin(token: string) {
@@ -35,4 +56,13 @@ export async function decodeToken(token: string) {
     const user = await JSON.parse(atob(base64))
 
     return Promise.resolve(user)
+}
+
+export function logout(dispatch: Dispatch) {
+    localStorage.removeItem('nominations')
+    localStorage.removeItem('token')
+    dispatch({type: 'SET_BANNER', data: ''})
+    dispatch({type: 'SET_LOGIN', data: null})
+    dispatch({type: 'SET_SAVED', data: ''})
+    dispatch({type: 'REPLACE_NOMINATIONS', data: []})
 }
