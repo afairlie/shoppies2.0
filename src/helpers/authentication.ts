@@ -1,10 +1,11 @@
-import type {Dispatch, Login} from '../App'
+import type {Dispatch, LoginType, RegisterType} from '../types'
 import getSavedMovies from './getSavedMovies'
 
 const LOGIN = `https://shoppy-awards-api.herokuapp.com/login`
 const NOMINATIONS = `https://shoppy-awards-api.herokuapp.com/nominations`
+const REGISTER = `https://shoppy-awards-api.herokuapp.com/users`
 
-async function apiLogin({email, password}: {email: string, password: string}) {
+async function apiLogin({email, password}: LoginType) {
     const response = await fetch(LOGIN, {
       method: 'POST',
       headers: {
@@ -18,7 +19,7 @@ async function apiLogin({email, password}: {email: string, password: string}) {
       : Promise.reject({status: response.status, data})
 }
 
-export async function login(e: any, form: Login, setForm: React.Dispatch<React.SetStateAction<Login>>, dispatch: Dispatch, history: any) {
+export async function login(e: any, form: LoginType, setForm: React.Dispatch<React.SetStateAction<LoginType>>, dispatch: Dispatch, history: any) {
     e.preventDefault();
     try {
         const result = await apiLogin(form)
@@ -29,6 +30,33 @@ export async function login(e: any, form: Login, setForm: React.Dispatch<React.S
         }
         dispatch({type: 'SET_LOGIN', data: result.username})
         setForm({email: '', password: ''})
+        history.push('/')
+    } catch (error) {
+        dispatch({type: 'SET_ERROR', data: error.data.error})
+    }
+}
+
+async function apiRegister({email, password, name}: RegisterType) {
+    const response = await fetch(REGISTER, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({email, password, name})
+    })
+    const data = await response.json()
+    // get token back or error status
+    return response.status === 200 ? Promise.resolve(data) 
+      : Promise.reject({status: response.status, data})
+}
+
+export async function register(e: any, form: RegisterType, setForm: React.Dispatch<React.SetStateAction<RegisterType>>, dispatch: Dispatch, history: any) {
+    e.preventDefault();
+    try {
+        const result = await apiRegister(form)
+        localStorage.setItem('token', result.token)
+        dispatch({type: 'SET_LOGIN', data: result.username})
+        setForm({email: '', password: '', name: ''})
         history.push('/')
     } catch (error) {
         dispatch({type: 'SET_ERROR', data: error.data.error})

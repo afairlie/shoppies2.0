@@ -9,49 +9,21 @@ import {
 // HELPERS
 import debounce from './helpers/debounce'
 import updateResults from './helpers/updateResults'
-import {login, checkLogin, decodeToken, logout} from './helpers/authentication'
+import {checkLogin, decodeToken, logout} from './helpers/authentication'
 import getSavedMovies from './helpers/getSavedMovies'
 
-import './App.css';
+// COMPONENTS
+import Login from './components/Login'
+import Register from './components/Register'
 
 // TYPES
-export type SearchResult = {
-  Poster: string
-  Title: string
-  Type: string
-  Year: string
-  imdbID: string
-}
+import {
+  Movie,
+  State,
+  ActionType
+} from './types'
 
-export type Movie = SearchResult & {
-  nominated: boolean
-}
-
-export type Login = {
-  email: string
-  password: string
-}
-
-export type Register = Login & {
-  username: string
-}
-
-export type State = {
-  results: Movie[]
-  nominations: Movie[]
-  error: string
-  banner: string
-  loggedIn: string | null
-  saved: 'saved' | 'editing' | null
-}
-
-export type ActionType = 'SET_RESULTS' | 'REFRESH_RESULTS' | 'ADD_NOMINATION' | 'REMOVE_NOMINATION' | 'REPLACE_NOMINATIONS' | 
-'SET_SAVED' | 'SET_LOGIN' | 'SET_BANNER' | 'SET_ERROR'
-
-export type Dispatch =  React.Dispatch<{
-  type: ActionType;
-  data?: any;
-}>
+import './App.css';
 
 function reducer(state: State, action: {type: ActionType, data?: any}): State {
   switch(action.type) {
@@ -111,11 +83,6 @@ function App() {
   let history = useHistory()
   // SEARCH INPUT
   const [value, setValue] = useState<string>('')
-  // LOGIN INPUTS
-  const [form, setForm] = useState<Login>({
-    email: '',
-    password: ''
-  })
   
   // QUERY API
   async function search(term: string) {
@@ -176,12 +143,6 @@ function App() {
     }
   }, [])
   
-  // LOGIN FORM
-  const onFormChange = (e:any, type: string) => {
-    const {value: nextValue} = e.target
-    setForm(prev => ({...prev, [type]: nextValue}))
-  }
-  
   return (
     <main className="App">
       <div className='nav' style={{display: 'flex', justifyContent: 'space-between', padding: '5px'}}>
@@ -205,24 +166,10 @@ function App() {
       {state.error && <p style={{color: 'red'}}>{state.error}</p>}
       <Switch>
         <Route path='/login'>
-          <div className='login'>
-            <h1>login</h1>
-            <form onSubmit={e => login(e, form, setForm, dispatch, history)}>
-              <input type='email' value={form.email} onChange={e => onFormChange(e, 'email')} placeholder='email'/>
-              <input type='password' value={form.password} onChange={e => onFormChange(e, 'password')} placeholder='password'/>
-              <button type='submit'>Submit</button>
-            </form>
-            <div style={{backgroundColor: 'lightgrey', maxWidth: '350px', padding: '20px', margin: 'auto', marginTop: '20px'}}>
-              <h2>use for testing</h2>
-              <p>email: test@email.com</p>
-              <p>password: fakepassword</p>
-            </div>
-          </div>
+          <Login dispatch={dispatch} history={history}/>
         </Route>
         <Route path='/register'>
-          <div className='register'>
-            <h1>register</h1>
-          </div>
+          <Register dispatch={dispatch} history={history}/>
         </Route>
         <Route path='/'>
             {state.banner && <p style={{color: 'green'}}>{state.banner}</p>}
@@ -246,54 +193,59 @@ function App() {
               <h1>nominations</h1>
               <ul>
                 {state.nominations.map((movie: Movie, i: number) => 
-                  <li key={i} style={{display: 'flex', justifyContent: 'space-between', maxWidth: '500px', padding: '2px', margin: 'auto'}}>
+                  <li key={i} style={{
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    maxWidth: '500px', 
+                    padding: '2px', 
+                    margin: 'auto'}}>
                     <span style={{display: 'inline-block'}}>{`${movie.Title}, ${movie.Year}`}</span>
-                    <button disabled={state.saved === 'saved'} onClick={() => dispatch({type: 'REMOVE_NOMINATION', data: movie})}>remove</button>
+                    <button 
+                      disabled={state.saved === 'saved'} 
+                      onClick={() => dispatch({type: 'REMOVE_NOMINATION', data: movie})}>remove</button>
                   </li>
                 )}
               </ul>
-              {state.nominations.length === 5 && 
-              <div style={{display: 'flex', justifyContent: 'space-between', maxWidth: '500px', margin: 'auto', backgroundColor: 'yellow', padding: '5px'}}>
-              {state.saved === 'saved' && 
-                  <>
-                  <span style={{display: 'inline-block'}}>Your nominations are saved, click to edit: </span>
-                  <button onClick={() => dispatch({type: 'SET_SAVED', data: 'edit'})}>edit</button>
-                  </>
-              }
-              {!state.loggedIn && state.saved !== 'saved' && 
-                <>
-                  {/* login & save these noms - OR - login and retrieve old noms */}
-                  <span style={{display: 'inline-block', textAlign: 'left'}}>You're not logged in. Would you like to save these nominations? </span>
-                  <div>
-                    <button>save new</button>
-                    {/* <button  style={{marginLeft: '10px'}}>retrieve saved</button> */}
-                  </div>
-                </>}
-              {state.loggedIn && state.saved !== 'saved' &&  
-                <>
-                  <span style={{display: 'inline-block'}}>Click to save your nominations: </span>
-                  <button onClick={async () => {
-                      const token = localStorage.getItem('token')
-                      const formattedNoms: any = {}
-                      state.nominations.forEach((m, i) => formattedNoms[`${i+1}`] = m.imdbID)
-                      try {
-                        let results = await fetch('https://shoppy-awards-api.herokuapp.com/nominations', {
-                          method: 'POST',
-                          headers: {
-                              'Content-Type': 'application/json',
-                              'Authorization': 'Bearer ' + token
-                          },
-                          body: JSON.stringify(formattedNoms)
-                        })
-                        results = await results.json()
-                        dispatch({type: 'SET_SAVED', data: 'saved'})
-                        getSavedMovies(results, dispatch)
-                      } catch (error) {
-                        throw new Error(error.status)
-                      }
-                  }}>save</button>
-                </>
-              }
+              {state.nominations.length === 5 && <div style={{
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  maxWidth: '500px',
+                  margin: 'auto', 
+                  backgroundColor: 'yellow', 
+                  padding: '5px'}}>
+                {state.saved === 'saved' && <>
+                    <span style={{display: 'inline-block'}}>Your nominations are saved, click to edit: </span>
+                    <button onClick={() => dispatch({type: 'SET_SAVED', data: 'edit'})}>edit</button>
+                    </>}
+                {!state.loggedIn && state.saved !== 'saved' && <>
+                    <span style={{display: 'inline-block', textAlign: 'left'}}>You're not logged in. Would you like to save these nominations? </span>
+                    <div>
+                      <button>save new</button>
+                    </div>
+                  </>}
+                {state.loggedIn && state.saved !== 'saved' && <>
+                    <span style={{display: 'inline-block'}}>Click to save your nominations: </span>
+                    <button onClick={async () => {
+                        const token = localStorage.getItem('token')
+                        const formattedNoms: any = {}
+                        state.nominations.forEach((m, i) => formattedNoms[`${i+1}`] = m.imdbID)
+                        try {
+                          let results = await fetch('https://shoppy-awards-api.herokuapp.com/nominations', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + token
+                            },
+                            body: JSON.stringify(formattedNoms)
+                          })
+                          results = await results.json()
+                          dispatch({type: 'SET_SAVED', data: 'saved'})
+                          getSavedMovies(results, dispatch)
+                        } catch (error) {
+                          throw new Error(error.status)
+                        }
+                    }}>save</button>
+                  </>}
               </div>}
             </div>
         </Route>

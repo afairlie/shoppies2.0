@@ -1,4 +1,4 @@
-import type {Dispatch} from '../App'
+import type {Dispatch} from '../types'
 
 async function getMovie(id: string) {
     try {
