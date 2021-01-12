@@ -2,7 +2,6 @@ import React, {useState} from 'react'
 import {useLocation} from 'react-router-dom'
 import {LoginType, Dispatch, State} from '../types'
 import {login} from '../helpers/authentication'
-import saveNominations from '../helpers/saveNominations'
 
 type LoginProps = {
     dispatch: Dispatch,

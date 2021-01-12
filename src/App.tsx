@@ -144,6 +144,7 @@ function App() {
           if (e.data.error === 'Expired Token') {
             localStorage.removeItem('token')
           }
+          // make this conditional only if token expired within last 30 mins?
           dispatch({type: 'SET_ERROR', data: e.data.error})
       })
     }
@@ -239,9 +240,8 @@ function App() {
                     </>}
                 {!state.loggedIn && state.saved !== 'saved' && <>
                     <span style={{display: 'inline-block', textAlign: 'left'}}>You're not logged in. Would you like to save these nominations? </span>
-                    <div>
-                      <button onClick={() => history.push('/login?save=new')}>save new</button>
-                    </div>
+                    <button onClick={() => history.push('/login?save=new')}>save new</button>
+
                   </>}
                 {state.loggedIn && state.saved !== 'saved' && <>
                     <span style={{display: 'inline-block'}}>Click to save your nominations: </span>

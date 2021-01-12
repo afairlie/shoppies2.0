@@ -6,7 +6,6 @@
         clearTimeout(timeout)
       }
       timeout = setTimeout(() => {
-        console.log('debounced function called with args: ', args)
         fn(...args)
       }, m)
     }
