@@ -1,5 +1,6 @@
-import type {Dispatch, LoginType, RegisterType} from '../types'
+import type {Dispatch, LoginType, RegisterType, Movie} from '../types'
 import getSavedMovies from './getSavedMovies'
+import saveNominations from './saveNominations'
 
 const LOGIN = `https://shoppy-awards-api.herokuapp.com/login`
 const NOMINATIONS = `https://shoppy-awards-api.herokuapp.com/nominations`
@@ -19,14 +20,16 @@ async function apiLogin({email, password}: LoginType) {
       : Promise.reject({status: response.status, data})
 }
 
-export async function login(e: any, form: LoginType, setForm: React.Dispatch<React.SetStateAction<LoginType>>, dispatch: Dispatch, history: any) {
+export async function login(e: any, form: LoginType, setForm: React.Dispatch<React.SetStateAction<LoginType>>, dispatch: Dispatch, history: any, newNoms?: Movie[]) {
     e.preventDefault();
     try {
         const result = await apiLogin(form)
         localStorage.setItem('token', result.token)
-        if (result.nominations) {
-        getSavedMovies(result, dispatch)
-        dispatch({type: 'SET_SAVED', data: 'saved'})
+        if (newNoms) {
+            saveNominations(newNoms, result.token, dispatch)
+        } else if (result.nominations) {
+            getSavedMovies(result, dispatch)
+            dispatch({type: 'SET_SAVED', data: 'saved'})
         }
         dispatch({type: 'SET_LOGIN', data: result.username})
         setForm({email: '', password: ''})

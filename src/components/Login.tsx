@@ -1,13 +1,17 @@
 import React, {useState} from 'react'
-import {LoginType, Dispatch} from '../types'
+import {useLocation} from 'react-router-dom'
+import {LoginType, Dispatch, State} from '../types'
 import {login} from '../helpers/authentication'
+import saveNominations from '../helpers/saveNominations'
 
 type LoginProps = {
     dispatch: Dispatch,
-    history: any
+    history: any,
+    state: State
 }
 
-export default function Login({dispatch, history}: LoginProps) {
+export default function Login({dispatch, history, state}: LoginProps) {
+    let query = new URLSearchParams(useLocation().search)
     const [form, setForm] = useState<LoginType>({
         email: '',
         password: ''
@@ -21,12 +25,23 @@ export default function Login({dispatch, history}: LoginProps) {
     return (
     <div className='login'>
         <h1>login</h1>
-        <form onSubmit={e => login(e, form, setForm, dispatch, history)}>
+        <form onSubmit={e => {
+                if (query.get('save') === 'new') {
+                    login(e, form, setForm, dispatch, history, state.nominations)              
+                } else {
+                    login(e, form, setForm, dispatch, history)
+                }
+            }}>
             <input type='email' value={form.email} onChange={e => onFormChange(e, 'email')} placeholder='email'/>
             <input type='password' value={form.password} onChange={e => onFormChange(e, 'password')} placeholder='password'/>
-            <button type='submit'>Submit</button>
+            <button type='submit' style={{marginLeft: '5px'}}>Submit</button>
         </form>
-        <div style={{backgroundColor: 'lightgrey', maxWidth: '350px', padding: '20px', margin: 'auto', marginTop: '20px'}}>
+        <div style={{
+            backgroundColor: 'lightgrey', 
+            maxWidth: '350px', 
+            padding: '20px', 
+            margin: 'auto', 
+            marginTop: '20px'}}>
             <h2>use for testing</h2>
             <p>email: test@email.com</p>
             <p>password: fakepassword</p>

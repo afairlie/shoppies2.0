@@ -1,4 +1,8 @@
-import React, {useState, useCallback, useReducer, useEffect} from 'react';
+import React, {
+  useState, 
+  useCallback, 
+  useReducer, 
+  useEffect} from 'react';
 import {
   Switch,
   Route,
@@ -11,6 +15,7 @@ import debounce from './helpers/debounce'
 import updateResults from './helpers/updateResults'
 import {checkLogin, decodeToken, logout} from './helpers/authentication'
 import getSavedMovies from './helpers/getSavedMovies'
+import saveNominations from './helpers/saveNominations'
 
 // COMPONENTS
 import Login from './components/Login'
@@ -81,6 +86,7 @@ const initialState: State = {
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState)
   let history = useHistory()
+
   // SEARCH INPUT
   const [value, setValue] = useState<string>('')
   
@@ -145,7 +151,7 @@ function App() {
   
   return (
     <main className="App">
-      <div className='nav' style={{display: 'flex', justifyContent: 'space-between', padding: '5px'}}>
+      <nav className='nav' style={{display: 'flex', justifyContent: 'space-between', padding: '5px'}}>
         <div>
           <NavLink to='/'>Shoppies 2.0</NavLink>
         </div>
@@ -162,26 +168,40 @@ function App() {
             <NavLink to='/register' style={{display: 'inline-block'}}>Register</NavLink>
           </>}
         </div>
-      </div>
+      </nav>
       {state.error && <p style={{color: 'red'}}>{state.error}</p>}
       <Switch>
         <Route path='/login'>
-          <Login dispatch={dispatch} history={history}/>
+          <Login dispatch={dispatch} history={history} state={state}/>
         </Route>
         <Route path='/register'>
           <Register dispatch={dispatch} history={history}/>
         </Route>
         <Route path='/'>
             {state.banner && <p style={{color: 'green'}}>{state.banner}</p>}
-            <div className='search' style={{textAlign: 'center'}}>
+            <div className='search' style={{
+              textAlign: 'center',
+              maxWidth: '500px',
+              margin: 'auto'
+              }}>
               <h1>search</h1>
-              <input value={value} onChange={handleChange} placeholder='search a film' style={{width: '100%', maxWidth: '500px', margin: '0 5px'}} />
+              <input style={{
+                width: 'calc(100% - 35px)', 
+                margin: '0 5px',
+                padding: '10px',
+                border: '1px solid lightGrey',
+                borderRadius: '20px'}} value={value} onChange={handleChange} placeholder='search a film'/>
             </div>
             <div className='results'>
               <h1>results</h1>
               {state.results.length > 0 && <ul>
                 {state.results.map((movie: Movie, i: number) => 
-                  <li key={i} style={{display: 'flex', justifyContent: 'space-between', maxWidth: '500px', padding: '2px', margin: 'auto'}}>
+                  <li key={i} style={{
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    maxWidth: '500px', 
+                    padding: '2px', 
+                    margin: 'auto'}}>
                     <span style={{display: 'inline-block'}}>{`${movie.Title}, ${movie.Year}`}</span>
                     <button disabled={movie.nominated} onClick={() => dispatch({type: 'ADD_NOMINATION', data: movie})}>nominate</button>
                   </li>
@@ -220,30 +240,19 @@ function App() {
                 {!state.loggedIn && state.saved !== 'saved' && <>
                     <span style={{display: 'inline-block', textAlign: 'left'}}>You're not logged in. Would you like to save these nominations? </span>
                     <div>
-                      <button>save new</button>
+                      <button onClick={() => history.push('/login?save=new')}>save new</button>
                     </div>
                   </>}
                 {state.loggedIn && state.saved !== 'saved' && <>
                     <span style={{display: 'inline-block'}}>Click to save your nominations: </span>
                     <button onClick={async () => {
-                        const token = localStorage.getItem('token')
-                        const formattedNoms: any = {}
-                        state.nominations.forEach((m, i) => formattedNoms[`${i+1}`] = m.imdbID)
-                        try {
-                          let results = await fetch('https://shoppy-awards-api.herokuapp.com/nominations', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': 'Bearer ' + token
-                            },
-                            body: JSON.stringify(formattedNoms)
-                          })
-                          results = await results.json()
-                          dispatch({type: 'SET_SAVED', data: 'saved'})
-                          getSavedMovies(results, dispatch)
-                        } catch (error) {
-                          throw new Error(error.status)
-                        }
+                      const token = localStorage.getItem('token')!
+                      try {
+                        const results = saveNominations(state.nominations, token, dispatch)
+                        getSavedMovies(results, dispatch)
+                      } catch (error) {
+                        throw new Error(error)
+                      }
                     }}>save</button>
                   </>}
               </div>}

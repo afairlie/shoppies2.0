@@ -22,11 +22,18 @@ export default function Register({dispatch, history}: RegisterProps) {
     return (
     <div className='register'>
         <h1>register</h1>
-        <form onSubmit={e => register(e, form, setForm, dispatch, history)}>
+        <form style={{
+            display: 'flex',
+            flexDirection: 'column',
+            padding: '20px',
+            backgroundColor: 'lightgrey',
+            maxWidth: '300px',
+            margin: 'auto'
+            }} onSubmit={e => register(e, form, setForm, dispatch, history)}>
             <input type='username' value={form.name} onChange={e => onFormChange(e, 'name')} placeholder='username'/>
             <input type='email' value={form.email} onChange={e => onFormChange(e, 'email')} placeholder='email'/>
             <input type='password' value={form.password} onChange={e => onFormChange(e, 'password')} placeholder='password'/>
-            <button type='submit'>Submit</button>
+            <button style={{margin: '15px auto 0'}} type='submit'>Submit</button>
         </form>
     </div>
   )
