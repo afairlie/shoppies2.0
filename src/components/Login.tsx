@@ -1,4 +1,4 @@
-import React, {useState, Component} from 'react'
+import React, {useState} from 'react'
 import {LoginType, Dispatch} from '../types'
 import {login} from '../helpers/authentication'
 
