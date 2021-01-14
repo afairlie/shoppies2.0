@@ -12,7 +12,7 @@ import {
 // HELPERS
 import debounce from './helpers/debounce'
 import updateResults from './helpers/updateResults'
-import {checkLogin, decodeToken, logout} from './helpers/authentication'
+import {checkLogin, decodeToken} from './helpers/authentication'
 import getSavedMovies from './helpers/getSavedMovies'
 import saveNominations from './helpers/saveNominations'
 
