@@ -1,0 +1,29 @@
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--yellow);
+    padding: 18px 10px 14px;
+    border-bottom: 1px solid var(--gray);
+}
+
+.logo {
+    font-size: 30px;
+}
+
+.username {
+    color: var(--purple);
+    font-weight: 500;
+    vertical-align: -1px;
+}
+
+.links-right > * {
+    display: inline-block;
+    border-bottom: 3px solid transparent;
+    padding-bottom: 2px;
+    margin-left: 10px;
+}
+
+.nav .active {
+    border-bottom: 3px solid var(--purple);
+}

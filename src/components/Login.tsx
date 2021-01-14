@@ -23,7 +23,7 @@ export default function Login({dispatch, history, state}: LoginProps) {
 
     return (
     <div className='login'>
-        <h1>login</h1>
+        <h1 className='title'>Login</h1>
         <form onSubmit={e => {
                 if (query.get('save') === 'new') {
                     login(e, form, setForm, dispatch, history, state.nominations)              
@@ -33,14 +33,9 @@ export default function Login({dispatch, history, state}: LoginProps) {
             }}>
             <input type='email' value={form.email} onChange={e => onFormChange(e, 'email')} placeholder='email'/>
             <input type='password' value={form.password} onChange={e => onFormChange(e, 'password')} placeholder='password'/>
-            <button type='submit' style={{marginLeft: '5px'}}>Submit</button>
+            <button type='submit' style={{margin: '15px auto 0px'}}>Submit</button>
         </form>
-        <div style={{
-            backgroundColor: 'lightgrey', 
-            maxWidth: '350px', 
-            padding: '20px', 
-            margin: 'auto', 
-            marginTop: '20px'}}>
+        <div className='credentials' style={{ margin: '5vh auto 0', borderRadius: '10px', color: 'gray'}}>
             <h2>use for testing</h2>
             <p>email: test@email.com</p>
             <p>password: fakepassword</p>
