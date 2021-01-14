@@ -6,7 +6,6 @@ import React, {
 import {
   Switch,
   Route,
-  NavLink,
   useHistory
 } from "react-router-dom";
 
@@ -18,6 +17,7 @@ import getSavedMovies from './helpers/getSavedMovies'
 import saveNominations from './helpers/saveNominations'
 
 // COMPONENTS
+import Nav from './components/Nav'
 import Login from './components/Login'
 import Register from './components/Register'
 
@@ -27,8 +27,6 @@ import {
   State,
   ActionType
 } from './types'
-
-import './App.css';
 
 function reducer(state: State, action: {type: ActionType, data?: any}): State {
   switch(action.type) {
@@ -151,26 +149,8 @@ function App() {
   }, [])
   
   return (
-    <main className="App">
-      <nav className='nav' style={{display: 'flex', justifyContent: 'space-between', padding: '5px'}}>
-        <div>
-          <NavLink to='/'>Shoppies 2.0</NavLink>
-        </div>
-        <div>
-          {state.loggedIn ?
-          <>
-            <span style={{verticalAlign: '-2px'}}>@{state.loggedIn}</span>
-            &nbsp;
-            <button onClick={() => {logout(dispatch)}}>Logout</button>
-          </>
-          : <>
-            <NavLink to='/login' style={{display: 'inline-block'}}>Login</NavLink>
-            &nbsp;
-            <NavLink to='/register' style={{display: 'inline-block'}}>Register</NavLink>
-          </>}
-        </div>
-      </nav>
-      {state.error && <p style={{color: 'red'}}>{state.error}</p>}
+    <main className="app">
+      <Nav state={state} dispatch={dispatch}/>
       <Switch>
         <Route path='/login'>
           <Login dispatch={dispatch} history={history} state={state}/>
@@ -179,19 +159,19 @@ function App() {
           <Register dispatch={dispatch} history={history}/>
         </Route>
         <Route path='/'>
-            {state.banner && <p style={{color: 'green'}}>{state.banner}</p>}
+            <div className='alert'>
+              {state.error && <p style={{color: 'red'}}>{state.error}</p>}
+              {state.banner && <p style={{color: 'green'}}>{state.banner}</p>}
+            </div>
             <div className='search' style={{
               textAlign: 'center',
               maxWidth: '500px',
               margin: 'auto'
               }}>
-              <h1>search</h1>
               <input style={{
                 width: 'calc(100% - 35px)', 
                 margin: '0 5px',
-                padding: '10px',
-                border: '1px solid lightGrey',
-                borderRadius: '20px'}} value={value} onChange={handleChange} placeholder='search a film'/>
+                padding: '10px'}} value={value} onChange={handleChange} placeholder='search a film'/>
             </div>
             <div className='results'>
               <h1>results</h1>
