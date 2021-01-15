@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react'
+import React, {useState, useCallback, useEffect} from 'react'
 
 // HELPERS
 import debounce from '../helpers/debounce'
@@ -7,14 +7,14 @@ import debounce from '../helpers/debounce'
 import './Search.css'
 
 // TYPES
-import type {Dispatch, State, Movie} from '../types'
+import type {Dispatch, Movie} from '../types'
 
 type SearchProps = {
     dispatch: Dispatch
-    state: State
+    results: Movie[]
 }
 
-export default function Search({dispatch, state}: SearchProps) {
+export default function Search({dispatch, results}: SearchProps) {
     const [value, setValue] = useState<string>('')
 
     // QUERY OMDB API
@@ -50,8 +50,8 @@ export default function Search({dispatch, state}: SearchProps) {
             autoFocus={true}/>
         </div>
         <div className='results'>
-          {state.results.length > 0 && <ul>
-            {state.results.map((movie: Movie, i: number) => 
+          {results.length > 0 && <ul>
+            {results.map((movie: Movie, i: number) => 
               <li key={i} className='result'>
                 <span>{`${movie.Title}, ${movie.Year}`}</span>
                 <button 

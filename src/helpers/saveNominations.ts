@@ -1,11 +1,11 @@
-import type {Dispatch, Movie} from '../types'
-// import getSavedMovies from './getSavedMovies'
+import type { Movie } from '../types'
 
-export default async function saveNominations(nominations: Movie[], token: string, dispatch: Dispatch) {
-    const formattedNoms: any = {}
+export default async function saveNominations(nominations: Movie[], token: string) {
+    const formattedNoms:any = {}
+    console.log(nominations)
     nominations.forEach((m, i) => formattedNoms[`${i+1}`] = m.imdbID)
     try {
-      let results = await fetch('https://shoppy-awards-api.herokuapp.com/nominations', {
+      let results:any = await fetch('https://shoppy-awards-api.herokuapp.com/nominations', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -13,10 +13,8 @@ export default async function saveNominations(nominations: Movie[], token: strin
         },
         body: JSON.stringify(formattedNoms)
       })
-      results = await results.json()
-      dispatch({type: 'SET_SAVED', data: 'saved'})
-      return results
+      return await results.json()
     } catch (error) {
-      return new Error(error.status)
+      return error
     }
 }

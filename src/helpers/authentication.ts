@@ -1,12 +1,14 @@
-import type {Dispatch, LoginType, RegisterType, Movie} from '../types'
-import getSavedMovies from './getSavedMovies'
-import saveNominations from './saveNominations'
+// TYPES
+import type { Dispatch } from '../types'
+import { LoginFormState } from '../components/Login'
+import { RegisterFormState } from '../components/Register'
 
+// ROUTES
 const LOGIN = `https://shoppy-awards-api.herokuapp.com/login`
 const NOMINATIONS = `https://shoppy-awards-api.herokuapp.com/nominations`
 const REGISTER = `https://shoppy-awards-api.herokuapp.com/users`
 
-async function apiLogin({email, password}: LoginType) {
+export async function apiLogin({email, password}: LoginFormState) {
     const response = await fetch(LOGIN, {
       method: 'POST',
       headers: {
@@ -20,26 +22,7 @@ async function apiLogin({email, password}: LoginType) {
       : Promise.reject({status: response.status, data})
 }
 
-export async function login(e: any, form: LoginType, setForm: React.Dispatch<React.SetStateAction<LoginType>>, dispatch: Dispatch, history: any, newNoms?: Movie[]) {
-    e.preventDefault();
-    try {
-        const result = await apiLogin(form)
-        localStorage.setItem('token', result.token)
-        if (newNoms) {
-            saveNominations(newNoms, result.token, dispatch)
-        } else if (result.nominations) {
-            getSavedMovies(result, dispatch)
-            dispatch({type: 'SET_SAVED', data: 'saved'})
-        }
-        dispatch({type: 'SET_LOGIN', data: result.username})
-        setForm({email: '', password: ''})
-        history.push('/')
-    } catch (error) {
-        dispatch({type: 'SET_ERROR', data: error.data.error})
-    }
-}
-
-async function apiRegister({email, password, name}: RegisterType) {
+export async function apiRegister({email, password, name}: RegisterFormState) {
     const response = await fetch(REGISTER, {
       method: 'POST',
       headers: {
@@ -51,19 +34,6 @@ async function apiRegister({email, password, name}: RegisterType) {
     // get token back or error status
     return response.status === 200 ? Promise.resolve(data) 
       : Promise.reject({status: response.status, data})
-}
-
-export async function register(e: any, form: RegisterType, setForm: React.Dispatch<React.SetStateAction<RegisterType>>, dispatch: Dispatch, history: any) {
-    e.preventDefault();
-    try {
-        const result = await apiRegister(form)
-        localStorage.setItem('token', result.token)
-        dispatch({type: 'SET_LOGIN', data: result.username})
-        setForm({email: '', password: '', name: ''})
-        history.push('/')
-    } catch (error) {
-        dispatch({type: 'SET_ERROR', data: error.data.error})
-    }
 }
 
 export async function checkLogin(token: string) {
@@ -79,18 +49,17 @@ export async function checkLogin(token: string) {
         : Promise.reject({status: response.status, data})
 }
 
-export async function decodeToken(token: string) {
+export function decodeToken(token: string) {
     // decode token - https://thinkster.io/tutorials/angularjs-jwt-auth/decoding-jwt-payloads
     const base64Url = token.split('.')[1]
     var base64 = base64Url.replace('-', '+').replace('_', '/')
-    const user = await JSON.parse(atob(base64))
-
-    return Promise.resolve(user)
+    return JSON.parse(atob(base64))
 }
 
 export function logout(dispatch: Dispatch) {
     localStorage.removeItem('nominations')
     localStorage.removeItem('token')
+    localStorage.removeItem('mode')
     dispatch({type: 'SET_BANNER', data: ''})
     dispatch({type: 'SET_LOGIN', data: null})
     dispatch({type: 'SET_SAVED', data: ''})

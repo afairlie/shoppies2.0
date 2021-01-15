@@ -1,6 +1,4 @@
 import React, {
-  useState, 
-  useCallback, 
   useReducer, 
   useEffect} from 'react';
 import {
@@ -10,16 +8,20 @@ import {
 } from "react-router-dom";
 
 // HELPERS
-import debounce from './helpers/debounce'
-import updateResults from './helpers/updateResults'
+import checkResultsAndNoms from './helpers/checkResultsAndNoms'
 import {checkLogin, decodeToken} from './helpers/authentication'
 import getSavedMovies from './helpers/getSavedMovies'
-import saveNominations from './helpers/saveNominations'
 
 // COMPONENTS
 import Nav from './components/Nav'
 import Login from './components/Login'
 import Register from './components/Register'
+import Search from './components/Search'
+import Nominations from './components/Nominations'
+
+// CSS
+import './App.css'
+import './forms.css'
 
 // TYPES
 import {
@@ -31,11 +33,11 @@ import {
 function reducer(state: State, action: {type: ActionType, data?: any}): State {
   switch(action.type) {
     case 'SET_RESULTS': {
-      const formattedResults = updateResults(state.nominations, action.data)
+      const formattedResults = checkResultsAndNoms(state.nominations, action.data)
       return {...state, results: formattedResults}
     }
     case 'REFRESH_RESULTS': {
-      const formattedResults = updateResults(state.nominations, state.results)
+      const formattedResults = checkResultsAndNoms(state.nominations, state.results)
       return {...state, results: formattedResults}
     }
     case 'ADD_NOMINATION': {
@@ -85,31 +87,6 @@ function App() {
   const [state, dispatch] = useReducer(reducer, initialState)
   let history = useHistory()
 
-  // SEARCH INPUT
-  const [value, setValue] = useState<string>('')
-  
-  // QUERY API
-  async function search(term: string) {
-    // FETCH
-    try {
-      const result: any = await fetch(`https://www.omdbapi.com/?apikey=${process.env.REACT_APP_OMDB}&s=${term}&type=movie`)
-      const parsed = await result.json()
-      dispatch({type: 'SET_RESULTS', data: parsed.Search || []})
-    } catch (error) {
-      dispatch({type: 'SET_ERROR', data: error})
-    }
-  }
-
-  // DEBOUNCED SEARCH - https://divyanshu013.dev/blog/react-debounce-throttle-hooks/
-  // eslint-disable-next-line
-  const debouncedSearch = useCallback(debounce((searchTerm:string) => search(searchTerm), 500), [])
-
-  const handleChange = (e:any) => {
-    const {value: nextValue} = e.target
-    setValue(nextValue)
-    debouncedSearch(nextValue)
-  }
-
   // CLEAR ERROR AFTER 2 SECONDS
   useEffect(() => {
     if (state.error) {
@@ -128,14 +105,22 @@ function App() {
 
   useEffect(() => {
     const token = localStorage.getItem('token')
+    const mode = localStorage.getItem('mode')
     if (token) {
       checkLogin(token)
       .then(async result => {
-        const decoded = await decodeToken(token)
+        const decoded = decodeToken(token)
         dispatch({type: 'SET_LOGIN', data: decoded.username})
-        dispatch({type: 'SET_SAVED', data: localStorage.getItem('mode')})
+        dispatch({type: 'SET_SAVED', data: mode })
         if (result.nominations) {
-          getSavedMovies(result, dispatch)
+          try {
+            const nominations: Movie[] = await getSavedMovies(result.nominations)
+            dispatch({type: 'REPLACE_NOMINATIONS', data: nominations})
+            localStorage.setItem('nominations', JSON.stringify(nominations))
+          } catch (error) {
+            console.log(error)
+            dispatch({type: 'SET_ERROR', data: error.data.error})
+          }
         }
       })
       .catch(e => {
@@ -160,83 +145,11 @@ function App() {
         </Route>
         <Route path='/'>
             <div className='alert'>
-              {state.error && <p style={{color: 'red'}}>{state.error}</p>}
+              {state.error && <p style={{color: 'red', marginBottom: '5px'}}>{state.error}</p>}
               {state.banner && <p style={{color: 'green'}}>{state.banner}</p>}
             </div>
-            <div className='search' style={{
-              textAlign: 'center',
-              maxWidth: '500px',
-              margin: 'auto'
-              }}>
-              <input style={{
-                width: 'calc(100% - 35px)', 
-                margin: '0 5px',
-                padding: '10px'}} value={value} onChange={handleChange} placeholder='search a film'/>
-            </div>
-            <div className='results'>
-              <h1>results</h1>
-              {state.results.length > 0 && <ul>
-                {state.results.map((movie: Movie, i: number) => 
-                  <li key={i} style={{
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    maxWidth: '500px', 
-                    padding: '2px', 
-                    margin: 'auto'}}>
-                    <span style={{display: 'inline-block'}}>{`${movie.Title}, ${movie.Year}`}</span>
-                    <button disabled={movie.nominated} onClick={() => dispatch({type: 'ADD_NOMINATION', data: movie})}>nominate</button>
-                  </li>
-                )}
-              </ul>}
-              {/* {state.results.length === 0 && value.length > 0 && <p>no results for "{value}"</p>} */}
-            </div>
-            <div className='nominations'>
-              <h1>nominations</h1>
-              <ul>
-                {state.nominations.map((movie: Movie, i: number) => 
-                  <li key={i} style={{
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    maxWidth: '500px', 
-                    padding: '2px', 
-                    margin: 'auto'}}>
-                    <span style={{display: 'inline-block'}}>{`${movie.Title}, ${movie.Year}`}</span>
-                    <button 
-                      disabled={state.saved === 'saved'} 
-                      onClick={() => dispatch({type: 'REMOVE_NOMINATION', data: movie})}>remove</button>
-                  </li>
-                )}
-              </ul>
-              {state.nominations.length === 5 && <div style={{
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  maxWidth: '500px',
-                  margin: 'auto', 
-                  backgroundColor: 'yellow', 
-                  padding: '5px'}}>
-                {state.saved === 'saved' && <>
-                    <span style={{display: 'inline-block'}}>Your nominations are saved, click to edit: </span>
-                    <button onClick={() => dispatch({type: 'SET_SAVED', data: 'edit'})}>edit</button>
-                    </>}
-                {!state.loggedIn && state.saved !== 'saved' && <>
-                    <span style={{display: 'inline-block', textAlign: 'left'}}>You're not logged in. Would you like to save these nominations? </span>
-                    <button onClick={() => history.push('/login?save=new')}>save new</button>
-
-                  </>}
-                {state.loggedIn && state.saved !== 'saved' && <>
-                    <span style={{display: 'inline-block'}}>Click to save your nominations: </span>
-                    <button onClick={async () => {
-                      const token = localStorage.getItem('token')!
-                      try {
-                        const results = saveNominations(state.nominations, token, dispatch)
-                        getSavedMovies(results, dispatch)
-                      } catch (error) {
-                        throw new Error(error)
-                      }
-                    }}>save</button>
-                  </>}
-              </div>}
-            </div>
+            <Search dispatch={dispatch} results={state.results}/>
+            <Nominations state={state} dispatch={dispatch} history={history}/>
         </Route>
       </Switch>
     </main>
