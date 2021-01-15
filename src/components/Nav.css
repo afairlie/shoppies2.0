@@ -1,14 +1,34 @@
-.nav {
+nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: var(--yellow);
     padding: 18px 10px 14px;
-    border-bottom: 1px solid var(--gray);
+    filter: drop-shadow(1px 1px 5px darkGray);
+}
+nav a {
+    outline: none;
+    border-bottom: 3px solid transparent;
+    padding: 3px 3px 0;
+}
+
+nav a.active {
+    border-bottom: 3px solid var(--purple);
+}
+
+nav a:focus {
+    outline: none;
+    box-shadow: 0 0 0 1px var(--purple);
+    border-radius: 2px;
+    color: var(--purple);
+}
+
+nav button {
+	border: 1px solid var(--purple);
 }
 
 .logo {
-    font-size: 30px;
+    font-size: 24px;
 }
 
 .username {
@@ -22,8 +42,4 @@
     border-bottom: 3px solid transparent;
     padding-bottom: 2px;
     margin-left: 10px;
-}
-
-.nav .active {
-    border-bottom: 3px solid var(--purple);
 }

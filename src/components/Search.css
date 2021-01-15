@@ -1,0 +1,33 @@
+div.search {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    max-width: 500px;
+    padding: 2px;
+    margin: auto;
+}
+
+div.input-container {
+    display: flex;
+    justify-content: space-between;
+    max-width: 100%;
+}
+
+input.search-input {
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 10px;
+}
+
+.result {
+    display: flex; 
+    justify-content: space-between; 
+    max-width: 500px;
+    text-align: left; 
+    padding: 2px; 
+    margin: auto;
+}
+
+.result span {
+    display: inline-block;
+}
