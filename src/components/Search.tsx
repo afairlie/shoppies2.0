@@ -25,7 +25,7 @@ export default function Search({dispatch, results}: SearchProps) {
         const parsed = await result.json()
         dispatch({type: 'SET_RESULTS', data: parsed.Search || []})
       } catch (error) {
-        dispatch({type: 'SET_ERROR', data: error})
+        dispatch({type: 'SET_ERROR', data: 'Omdb API error'})
       }
     }
 
@@ -56,9 +56,10 @@ export default function Search({dispatch, results}: SearchProps) {
                 <span>{`${movie.Title}, ${movie.Year}`}</span>
                 <button 
                   disabled={movie.nominated} 
-                  onClick={() => 
+                  onClick={e => {
+                    e.currentTarget.blur()
                     dispatch({type: 'ADD_NOMINATION', data: movie})
-                  }>nominate</button>
+                  }}>nominate</button>
               </li>
             )}
           </ul>}

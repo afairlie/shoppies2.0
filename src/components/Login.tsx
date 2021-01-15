@@ -38,7 +38,7 @@ export default function Login({dispatch, history, state}: LoginProps) {
                 setForm({email: '', password: ''})
             } else {
                 nominations = await getSavedMovies(response.nominations)
-                dispatch({type: 'REPLACE_NOMINATIONS', data: nominations})
+                dispatch({type: 'SET_NOMINATIONS', data: nominations})
             }
             localStorage.setItem('nominations', JSON.stringify(nominations))
             dispatch({type: 'SET_SAVED', data: 'saved'})
@@ -61,7 +61,7 @@ export default function Login({dispatch, history, state}: LoginProps) {
         <form onSubmit={login}>
             <input type='email' value={form.email} onChange={e => onFormChange(e, 'email')} placeholder='email'/>
             <input type='password' value={form.password} onChange={e => onFormChange(e, 'password')} placeholder='password'/>
-            <button type='submit' className='submit'>Submit</button>
+            <button type='submit' className='submit' onClick={e => e.currentTarget.blur()}>Submit</button>
         </form>
         <div className='credentials' style={{ margin: '5vh auto 0', borderRadius: '10px', color: 'gray'}}>
             <h2>use for testing</h2>

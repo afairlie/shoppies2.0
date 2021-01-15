@@ -36,14 +36,19 @@ export default function Nominations({state, dispatch, history}: NominationsProps
                         <span style={{display: 'inline-block'}}>{`${movie.Title}, ${movie.Year}`}</span>
                         <button 
                         disabled={state.saved === 'saved'} 
-                        onClick={() => dispatch({type: 'REMOVE_NOMINATION', data: movie})}>remove</button>
+                        onClick={e => {
+                            e.currentTarget.blur()
+                            dispatch({type: 'REMOVE_NOMINATION', data: movie})
+                        }}>remove</button>
                     </li>
                     )}
                 </ul>
                 {state.nominations.length === 5 && <div className='nominations-banner'>
                     {state.saved === 'saved' && <>
                         <span style={{display: 'inline-block', paddingTop: '3px'}}>Your nominations are saved, click to edit: </span>
-                        <button onClick={() => dispatch({type: 'SET_SAVED', data: 'edit'})}>edit</button>
+                        <button onClick={() => {
+                                dispatch({type: 'SET_SAVED', data: 'edit'})
+                            }}>edit</button>
                         </>}
                     {!state.loggedIn && state.saved !== 'saved' && <>
                         <span style={{display: 'inline-block', textAlign: 'left'}}>You're not logged in. Would you like to save these nominations? </span>
@@ -57,7 +62,7 @@ export default function Nominations({state, dispatch, history}: NominationsProps
                             try {
                                 const results = await saveNominations(state.nominations, token)
                                 const nominations = await getSavedMovies(results.nominations)
-                                dispatch({type: 'REPLACE_NOMINATIONS', data: nominations})
+                                dispatch({type: 'SET_NOMINATIONS', data: nominations})
                                 localStorage.setItem('nominations', JSON.stringify(state.nominations))
                                 dispatch({type: 'SET_SAVED', data: 'saved'})
                             } catch (error) {
