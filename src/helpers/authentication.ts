@@ -63,5 +63,5 @@ export function logout(dispatch: Dispatch) {
     dispatch({type: 'SET_BANNER', data: ''})
     dispatch({type: 'SET_LOGIN', data: null})
     dispatch({type: 'SET_SAVED', data: ''})
-    dispatch({type: 'REPLACE_NOMINATIONS', data: []})
+    dispatch({type: 'SET_NOMINATIONS', data: []})
 }

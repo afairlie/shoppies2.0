@@ -20,7 +20,7 @@ export type State = {
     saved: 'saved' | 'editing' | null
 }
 
-export type ActionType = 'SET_RESULTS' | 'REFRESH_RESULTS' | 'ADD_NOMINATION' | 'REMOVE_NOMINATION' | 'REPLACE_NOMINATIONS' | 
+export type ActionType = 'SET_RESULTS' | 'REFRESH_RESULTS' | 'ADD_NOMINATION' | 'REMOVE_NOMINATION' | 'SET_NOMINATIONS' | 
 'SET_SAVED' | 'SET_LOGIN' | 'SET_BANNER' | 'SET_ERROR'
 
 export type Dispatch =  React.Dispatch<{

@@ -53,7 +53,7 @@ function reducer(state: State, action: {type: ActionType, data?: any}): State {
       }
       return {...newState, nominations: state.nominations.filter((m: Movie) => m.imdbID !== action.data.imdbID)}
     }
-    case 'REPLACE_NOMINATIONS': {
+    case 'SET_NOMINATIONS': {
       return {...state, nominations: action.data}
     }
     case 'SET_SAVED': {
@@ -108,17 +108,16 @@ function App() {
     const mode = localStorage.getItem('mode')
     if (token) {
       checkLogin(token)
-      .then(async result => {
+      .then(async response => {
         const decoded = decodeToken(token)
         dispatch({type: 'SET_LOGIN', data: decoded.username})
         dispatch({type: 'SET_SAVED', data: mode })
-        if (result.nominations) {
+        if (response.nominations) {
           try {
-            const nominations: Movie[] = await getSavedMovies(result.nominations)
-            dispatch({type: 'REPLACE_NOMINATIONS', data: nominations})
+            const nominations: Movie[] = await getSavedMovies(response.nominations)
+            dispatch({type: 'SET_NOMINATIONS', data: nominations})
             localStorage.setItem('nominations', JSON.stringify(nominations))
           } catch (error) {
-            console.log(error)
             dispatch({type: 'SET_ERROR', data: error.data.error})
           }
         }
