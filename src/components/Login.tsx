@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect} from 'react'
 import {useLocation} from 'react-router-dom'
 
 // HELPERS
@@ -32,6 +32,15 @@ export default function Login({dispatch, history, state, children}: LoginProps) 
         email: '',
         password: ''
     })
+    useEffect(():any => {
+        let timeout;
+        if(loading === 'logging in') {
+            timeout = setTimeout(() => {
+                setLoading('waking up heroku')
+            }, 1000)
+        }
+        return timeout
+    }, [loading])
 
     async function login(e: React.FormEvent<EventTarget>){
         e.preventDefault();
@@ -49,7 +58,7 @@ export default function Login({dispatch, history, state, children}: LoginProps) 
                 dispatch({type: 'SET_NOMINATIONS', data: nominations})
             }
             localStorage.setItem('nominations', JSON.stringify(nominations))
-            dispatch({type: 'SET_SAVED', data: 'saved'})
+            dispatch({type: 'SET_MODE', data: 'saved'})
             dispatch({type: 'SET_LOGIN', data: response.username})
             setForm({email: '', password: ''})
             setLoading('')
@@ -75,7 +84,7 @@ export default function Login({dispatch, history, state, children}: LoginProps) 
             <form onSubmit={login}>
                 <input type='email' value={form.email} onChange={e => onFormChange(e, 'email')} placeholder='email'/>
                 <input type='password' value={form.password} onChange={e => onFormChange(e, 'password')} placeholder='password'/>
-                <button type='submit' className='submit' onClick={e => e.currentTarget.blur()}>Submit</button>
+                <button type='submit' className='submit' onClick={e => {e.currentTarget.blur()}}>Submit</button>
             </form>
             <div className='credentials' style={{ margin: '5vh auto 0', borderRadius: '10px', color: 'gray'}}>
                 <h2>use for testing</h2>

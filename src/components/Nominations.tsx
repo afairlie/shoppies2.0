@@ -47,7 +47,7 @@ export default function Nominations({state, dispatch, history}: NominationsProps
                     {state.saved === 'saved' && <>
                         <span style={{display: 'inline-block', paddingTop: '3px'}}>Your nominations are saved, click to edit: </span>
                         <button onClick={() => {
-                                dispatch({type: 'SET_SAVED', data: 'edit'})
+                                dispatch({type: 'SET_MODE', data: 'edit'})
                             }}>edit</button>
                         </>}
                     {!state.loggedIn && state.saved !== 'saved' && <>
@@ -64,7 +64,7 @@ export default function Nominations({state, dispatch, history}: NominationsProps
                                 const nominations = await getSavedMovies(results.nominations)
                                 dispatch({type: 'SET_NOMINATIONS', data: nominations})
                                 localStorage.setItem('nominations', JSON.stringify(state.nominations))
-                                dispatch({type: 'SET_SAVED', data: 'saved'})
+                                dispatch({type: 'SET_MODE', data: 'saved'})
                             } catch (error) {
                                 throw new Error(error)
                             }

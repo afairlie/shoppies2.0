@@ -59,7 +59,7 @@ function reducer(state: State, action: {type: ActionType, data?: any}): State {
     case 'SET_NOMINATIONS': {
       return {...state, nominations: action.data}
     }
-    case 'SET_SAVED': {
+    case 'SET_MODE': {
       localStorage.setItem('mode', action.data)
       return {...state, saved: action.data}
     }
@@ -115,7 +115,7 @@ function App() {
       .then(async response => {
         const decoded = decodeToken(token)
         dispatch({type: 'SET_LOGIN', data: decoded.username})
-        dispatch({type: 'SET_SAVED', data: mode })
+        dispatch({type: 'SET_MODE', data: mode })
         if (response.nominations) {
           try {
             const nominations: Movie[] = await getSavedMovies(response.nominations)
@@ -136,34 +136,35 @@ function App() {
     }
   }, [])
   
-  return (
-    <main className="app">
+  return (<>
       <Nav state={state} dispatch={dispatch}/>
-      <Switch>
-        <Route path='/login'>
-          <Login dispatch={dispatch} history={history} state={state}>
-            <div className='alert'>
-              {state.error && <p style={{color: 'red'}}>{state.error}</p>}
-            </div>
-          </Login>
-        </Route>
-        <Route path='/register'>
-          <Register dispatch={dispatch} history={history}>
-            <div className='alert'>
-              {state.error && <p style={{color: 'red'}}>{state.error}</p>}
-            </div>
-          </Register>
-        </Route>
-        <Route path='/'>
-            <div className='alert'>
-              {state.error && <p style={{color: 'red'}}>{state.error}</p>}
-              {state.banner && !state.error && <p style={{color: 'green'}}>{state.banner}</p>}
-            </div>
-            <Search dispatch={dispatch} results={state.results} searchTerm={state.searchTerm} />
-            <Nominations state={state} dispatch={dispatch} history={history}/>
-        </Route>
-      </Switch>
-    </main>
+      <main className="app">
+        <Switch>
+          <Route path='/login'>
+            <Login dispatch={dispatch} history={history} state={state}>
+              <div className='alert'>
+                {state.error && <p style={{color: 'red'}}>{state.error}</p>}
+              </div>
+            </Login>
+          </Route>
+          <Route path='/register'>
+            <Register dispatch={dispatch} history={history}>
+              <div className='alert'>
+                {state.error && <p style={{color: 'red'}}>{state.error}</p>}
+              </div>
+            </Register>
+          </Route>
+          <Route path='/'>
+              <div className='alert'>
+                {state.error && <p style={{color: 'red'}}>{state.error}</p>}
+                {state.banner && !state.error && <p style={{color: 'green'}}>{state.banner}</p>}
+              </div>
+              <Search dispatch={dispatch} results={state.results} searchTerm={state.searchTerm} />
+              <Nominations state={state} dispatch={dispatch} history={history}/>
+          </Route>
+        </Switch>
+      </main>
+    </>
   );
 }
 

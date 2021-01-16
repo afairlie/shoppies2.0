@@ -7,14 +7,14 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
 
 // TYPES
-export type LoadStatus = 'logging in' | 'waiting on heroku' | 'saving nominations' | 'retrieving nominations' | 'registering' | ''
+export type LoadStatus = 'logging in' | 'waking up heroku' | 'saving nominations' | 'retrieving nominations' | 'registering' | ''
 
 type ProgressProps = {
     loading: LoadStatus
 }
 
 const useStyles = makeStyles(() => ({
-    root: {
+    container: {
         color:'var(--yellow)',
         margin: '50px auto',
         position: 'relative',
@@ -23,14 +23,16 @@ const useStyles = makeStyles(() => ({
     label: {
         top: 0,
         left: 0,
-        bottom: 0,
+        color: 'var(--purple)',
         right: 0,
-        position: "absolute",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        bottom: 0,
+        display: 'flex',
+        position: 'absolute',
+        alignItems: 'center',
         fontWeight: 500,
-        color: 'var(--purple)'
+        justifyContent: 'center',
+        width: '120px',
+        margin: 'auto',
     }
   }))
 
@@ -38,7 +40,7 @@ export default function Progress(props: ProgressProps) {
     const classes = useStyles()
 
     return (
-    <div className={classes.root}>
+    <div className={classes.container}>
         <div className={classes.label}>{props.loading}</div>
         <CircularProgress color='inherit' size={150}/>
     </div>)

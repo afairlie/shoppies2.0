@@ -72,7 +72,7 @@ export default function Search({dispatch, results, searchTerm}: SearchProps) {
             onChange={handleChange} 
             placeholder='search a film' 
             autoFocus={true}/>
-            <CloseIcon classes={{root: classes.root}} onClick={e => {
+            <CloseIcon classes={classes} onClick={e => {
                 e.currentTarget.blur()
                 inputEl.current?.focus()
                 dispatch({type: 'SET_SEARCH', data: ''})

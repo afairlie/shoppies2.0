@@ -22,7 +22,7 @@ export type State = {
 }
 
 export type ActionType = 'SET_SEARCH' | 'SET_RESULTS' | 'REFRESH_RESULTS' | 'ADD_NOMINATION' | 'REMOVE_NOMINATION' | 'SET_NOMINATIONS' | 
-'SET_SAVED' | 'SET_LOGIN' | 'SET_BANNER' | 'SET_ERROR'
+'SET_MODE' | 'SET_LOGIN' | 'SET_BANNER' | 'SET_ERROR'
 
 export type Dispatch =  React.Dispatch<{
     type: ActionType;

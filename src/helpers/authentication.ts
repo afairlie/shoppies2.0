@@ -60,7 +60,7 @@ export function logout(dispatch: Dispatch) {
     localStorage.removeItem('mode')
     dispatch({type: 'SET_BANNER', data: ''})
     dispatch({type: 'SET_LOGIN', data: null})
-    dispatch({type: 'SET_SAVED', data: ''})
+    dispatch({type: 'SET_MODE', data: ''})
     dispatch({type: 'SET_NOMINATIONS', data: []})
     dispatch({type: 'SET_SEARCH', data: ''})
 }
