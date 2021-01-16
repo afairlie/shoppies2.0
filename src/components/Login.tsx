@@ -57,6 +57,8 @@ export default function Login({dispatch, history, state, children}: LoginProps) 
                 nominations = await getSavedMovies(response.nominations)
                 dispatch({type: 'SET_NOMINATIONS', data: nominations})
             }
+            dispatch({type: 'SET_SEARCH', data: ''})
+            dispatch({type: 'SET_RESULTS', data: []})
             localStorage.setItem('nominations', JSON.stringify(nominations))
             dispatch({type: 'SET_MODE', data: 'saved'})
             dispatch({type: 'SET_LOGIN', data: response.username})

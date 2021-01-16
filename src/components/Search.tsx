@@ -1,4 +1,4 @@
-import React, {useCallback, useRef} from 'react'
+import React, {useCallback} from 'react'
 
 // HELPERS
 import debounce from '../helpers/debounce'
@@ -18,6 +18,7 @@ type SearchProps = {
   dispatch: Dispatch
   results: Movie[]
   searchTerm: string
+  inputRef: any
 }
 
 const useStyles = makeStyles(() => ({
@@ -34,9 +35,8 @@ const useStyles = makeStyles(() => ({
   }
 }))
 
-export default function Search({dispatch, results, searchTerm}: SearchProps) {
+export default function Search({dispatch, results, searchTerm, inputRef}: SearchProps) {
     const classes = useStyles()
-    const inputEl = useRef<HTMLInputElement>(null)
     // QUERY OMDB API
     async function search(term: string) {
       const key = process.env.REACT_APP_OMDB;
@@ -66,7 +66,7 @@ export default function Search({dispatch, results, searchTerm}: SearchProps) {
       <div className='search'>
         <div className='input-container'>
           <input 
-            ref={inputEl}
+            ref={inputRef}
             className='search-input' 
             value={searchTerm} 
             onChange={handleChange} 
@@ -74,7 +74,7 @@ export default function Search({dispatch, results, searchTerm}: SearchProps) {
             autoFocus={true}/>
             <CloseIcon classes={classes} onClick={e => {
                 e.currentTarget.blur()
-                inputEl.current?.focus()
+                inputRef.current?.focus()
                 dispatch({type: 'SET_SEARCH', data: ''})
                 dispatch({type: 'SET_RESULTS', data: []})
               }}/>

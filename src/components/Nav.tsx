@@ -16,6 +16,7 @@ import type {Dispatch, State} from '../types'
 type NavType = {
     dispatch: Dispatch
     state: State
+    inputRef: any
 }
 
 const useStyles = makeStyles(() => ({
@@ -24,7 +25,7 @@ const useStyles = makeStyles(() => ({
       }
 }))
 
-export default function Nav({dispatch, state}: NavType){
+export default function Nav({dispatch, state, inputRef}: NavType){
     const classes = useStyles()
     return (<nav className='nav'>
             <div className='links-left'>
@@ -42,6 +43,7 @@ export default function Nav({dispatch, state}: NavType){
                 <div>
                     <button onClick={e => {
                         e.currentTarget.blur()
+                        inputRef.current?.focus()
                         logout(dispatch)
                     }}>Logout</button>
                 </div>

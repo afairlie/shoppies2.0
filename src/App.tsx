@@ -1,6 +1,7 @@
 import React, {
   useReducer, 
-  useEffect} from 'react';
+  useEffect,
+  useRef} from 'react';
 import {
   Switch,
   Route,
@@ -90,6 +91,7 @@ const initialState: State = {
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState)
   let history = useHistory()
+  const searchInput = useRef<HTMLInputElement>(null)
 
   // CLEAR ERROR AFTER 2 SECONDS
   useEffect(() => {
@@ -137,7 +139,7 @@ function App() {
   }, [])
   
   return (<>
-      <Nav state={state} dispatch={dispatch}/>
+      <Nav state={state} dispatch={dispatch} inputRef={searchInput}/>
       <main className="app">
         <Switch>
           <Route path='/login'>
@@ -159,7 +161,7 @@ function App() {
                 {state.error && <p style={{color: 'red'}}>{state.error}</p>}
                 {state.banner && !state.error && <p style={{color: 'green'}}>{state.banner}</p>}
               </div>
-              <Search dispatch={dispatch} results={state.results} searchTerm={state.searchTerm} />
+              <Search dispatch={dispatch} results={state.results} searchTerm={state.searchTerm} inputRef={searchInput}/>
               <Nominations state={state} dispatch={dispatch} history={history}/>
           </Route>
         </Switch>
