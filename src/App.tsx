@@ -137,15 +137,23 @@ function App() {
       <Nav state={state} dispatch={dispatch}/>
       <Switch>
         <Route path='/login'>
-          <Login dispatch={dispatch} history={history} state={state}/>
+          <Login dispatch={dispatch} history={history} state={state}>
+            <div className='alert'>
+              {state.error && <p style={{color: 'red'}}>{state.error}</p>}
+            </div>
+          </Login>
         </Route>
         <Route path='/register'>
-          <Register dispatch={dispatch} history={history}/>
+          <Register dispatch={dispatch} history={history}>
+            <div className='alert'>
+              {state.error && <p style={{color: 'red'}}>{state.error}</p>}
+            </div>
+          </Register>
         </Route>
         <Route path='/'>
             <div className='alert'>
-              {state.error && <p style={{color: 'red', marginBottom: '5px'}}>{state.error}</p>}
-              {state.banner && <p style={{color: 'green'}}>{state.banner}</p>}
+              {state.error && <p style={{color: 'red'}}>{state.error}</p>}
+              {state.banner && !state.error && <p style={{color: 'green'}}>{state.banner}</p>}
             </div>
             <Search dispatch={dispatch} results={state.results}/>
             <Nominations state={state} dispatch={dispatch} history={history}/>

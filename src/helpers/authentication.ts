@@ -17,7 +17,6 @@ export async function apiLogin({email, password}: LoginFormState) {
       body: JSON.stringify({email, password})
     })
     const data = await response.json()
-    // get token back or error status
     return response.status === 200 ? Promise.resolve(data) 
       : Promise.reject({status: response.status, data})
 }
@@ -31,7 +30,6 @@ export async function apiRegister({email, password, name}: RegisterFormState) {
       body: JSON.stringify({email, password, name})
     })
     const data = await response.json()
-    // get token back or error status
     return response.status === 200 ? Promise.resolve(data) 
       : Promise.reject({status: response.status, data})
 }

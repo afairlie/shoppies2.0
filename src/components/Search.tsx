@@ -10,8 +10,8 @@ import './Search.css'
 import type {Dispatch, Movie} from '../types'
 
 type SearchProps = {
-    dispatch: Dispatch
-    results: Movie[]
+  dispatch: Dispatch
+  results: Movie[]
 }
 
 export default function Search({dispatch, results}: SearchProps) {
@@ -20,6 +20,9 @@ export default function Search({dispatch, results}: SearchProps) {
     // QUERY OMDB API
     async function search(term: string) {
       const key = process.env.REACT_APP_OMDB;
+      if (!term) {
+        dispatch({type: 'SET_RESULTS', data: []})
+      }
       try {
         const result: any = await fetch(`https://www.omdbapi.com/?apikey=${key}&s=${term.trim()}&type=movie`)
         const parsed = await result.json()
