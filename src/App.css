@@ -15,8 +15,13 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  height: 100vh;
   background-color: var(--light-gray);
+}
+
+#root {
+  position: relative;
+  min-height: 100vh;
+  width: 100vw;
 }
 
 html *:focus {
@@ -32,8 +37,9 @@ p, ul {
 }
 
 main {
-  padding-bottom: 20px;
   text-align: center;
+  width: 100%;
+  min-height: calc(100vh - 66px - 38px);
 }
 
 h1.title {
@@ -95,7 +101,7 @@ button:disabled {
   display: flex;
   justify-content: space-between;
   max-width: 500px;
-  margin: 5px auto;
+  margin: 5px auto 40px;
   margin-top: 20px;
   padding: 5px;
   padding-top: 20px;
@@ -107,6 +113,14 @@ button:disabled {
   color: var(--purple);
   margin-left: 3px;
   font-weight: 600;
+}
+
+footer {
+  width: 100%;
+  position: relative;
+  bottom: 0;
+  text-align: center;
+  padding: 10px 0;
 }
 
 html *:active:hover {

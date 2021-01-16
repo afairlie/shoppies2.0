@@ -22,26 +22,38 @@ Authorization is handled using JWT tokens with a 5 minute expiration time (no re
 This project was bootstrapped with Create React App.
 ## To Setup and Run This Project Locally
 
-### Download or clone the repository:
-### https://github.com/afairlie/shoppies2.0
-### `git clone git@github.com:afairlie/shoppies2.0.git <project_name> && cd <project_name>`
+ Download or clone the repository:
 
-### Install project dependencies:
-### `yarn install`
+ https://github.com/afairlie/shoppies2.0
 
-### Setup environment variables:
-### `cp .env.copy .env && rm .env.copy`
-### In your .env file, replace `<api_key>` with your key from [OMDB API](http://www.omdbapi.com/apikey.aspx)
-### ⚠️ make sure .env is included in your .gitignore before proceeding ⚠️
-### In the project directory, run:
-### `yarn start`
+ `git clone git@github.com:afairlie/shoppies2.0.git <project_name>`
+ 
+ `cd <project_name>`
+
+ Install project dependencies:
+
+ `yarn install`
+
+ Setup environment variables:
+
+ `cp .env.copy .env`
+ 
+ `rm .env.copy`
+
+ In your .env file, replace `<api_key>` with your key from [OMDB API](http://www.omdbapi.com/apikey.aspx)
+
+ ⚠️ make sure .env is included in your .gitignore before proceeding ⚠️
+
+ In the project directory, run:
+ 
+ `yarn start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) in your favourite browser and enjoy the shoppies!
 
 ## Shoppies 2.0 is Deployed on Netlify
 
-### https://shoppies-reloaded.netlify.app/
+https://shoppies-reloaded.netlify.app/
 
 ## About Shoppies API
 

@@ -6,6 +6,7 @@ import {logout} from '../helpers/authentication'
 
 // COMPONENTS
 import GitHubIcon from '@material-ui/icons/GitHub'
+import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 
 // CSS
 import './Nav.css'
@@ -32,6 +33,9 @@ export default function Nav({dispatch, state, inputRef}: NavType){
                 <Link to='/' className='logo' onClick={e => e.currentTarget.blur()}>Shoppies 2.0</Link>
                 <a href='https://github.com/afairlie/shoppies2.0' target='_blank' rel='noreferrer' onClick={e => e.currentTarget.blur()}>
                     <GitHubIcon classes={{root: classes.root}}/>
+                </a>
+                <a href='https://afairlie.biz/ariane-fairlie-cv.pdf' target='_blank' rel='noreferrer' onClick={e => e.currentTarget.blur()}>
+                    <DescriptionOutlinedIcon classes={{root: classes.root}}/>
                 </a>
             </div>
             <div className='links-right'>

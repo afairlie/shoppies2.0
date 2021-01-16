@@ -166,6 +166,11 @@ function App() {
           </Route>
         </Switch>
       </main>
+      <footer>
+        <a href='https://shoppy-awards-api.herokuapp.com/' target='_blank' rel='noreferrer' style={{color: 'var(--light-purple)', fontSize: 'unset'}} onClick={e => e.currentTarget.blur()}>
+          <p>shoppy-awards-api.herokuapp.com</p>
+        </a>
+      </footer>
     </>
   );
 }
