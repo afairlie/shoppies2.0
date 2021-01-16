@@ -9,14 +9,15 @@ div.search {
 
 div.input-container {
     display: flex;
+    position: relative;
     justify-content: space-between;
     max-width: 100%;
 }
 
 input.search-input {
     width: 100%;
-    margin-bottom: 20px;
     padding: 10px;
+    margin-bottom: 20px;
 }
 
 .result {

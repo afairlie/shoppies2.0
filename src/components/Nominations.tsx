@@ -56,7 +56,7 @@ export default function Nominations({state, dispatch, history}: NominationsProps
 
                     </>}
                     {state.loggedIn && state.saved !== 'saved' && <>
-                        <span style={{display: 'inline-block'}}>Click to save your nominations: </span>
+                        <span style={{display: 'inline-block'}}>Click to save your edits: </span>
                         <button onClick={async () => {
                         const token = localStorage.getItem('token')!
                             try {
