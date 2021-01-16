@@ -45,7 +45,7 @@ This project was bootstrapped with Create React App.
  ⚠️ make sure .env is included in your .gitignore before proceeding ⚠️
 
  In the project directory, run:
- 
+
  `yarn start`
 
 Runs the app in the development mode.\
@@ -66,7 +66,7 @@ https://github.com/afairlie/shoppies_api
 Shoppies 1.0 and Shoppies API were created for the winter internship application.
 For this summer internship application, Shoppies API was refactored, and Shoppies 2.0 was built from scratch.
 
-New features of Shoppies 2.0 and the Shoppies API include:
+## New features of Shoppies 2.0 and the Shoppies API include:
 
 Frontend:
 
