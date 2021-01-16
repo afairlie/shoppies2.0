@@ -18,9 +18,10 @@ export type State = {
     banner: string
     loggedIn: string | null
     saved: 'saved' | 'editing' | null
+    searchTerm: string
 }
 
-export type ActionType = 'SET_RESULTS' | 'REFRESH_RESULTS' | 'ADD_NOMINATION' | 'REMOVE_NOMINATION' | 'SET_NOMINATIONS' | 
+export type ActionType = 'SET_SEARCH' | 'SET_RESULTS' | 'REFRESH_RESULTS' | 'ADD_NOMINATION' | 'REMOVE_NOMINATION' | 'SET_NOMINATIONS' | 
 'SET_SAVED' | 'SET_LOGIN' | 'SET_BANNER' | 'SET_ERROR'
 
 export type Dispatch =  React.Dispatch<{

@@ -12,10 +12,10 @@ import type {Dispatch, Movie} from '../types'
 type SearchProps = {
   dispatch: Dispatch
   results: Movie[]
+  searchTerm: string
 }
 
-export default function Search({dispatch, results}: SearchProps) {
-    const [value, setValue] = useState<string>('')
+export default function Search({dispatch, results, searchTerm}: SearchProps) {
 
     // QUERY OMDB API
     async function search(term: string) {
@@ -37,9 +37,9 @@ export default function Search({dispatch, results}: SearchProps) {
     const debouncedSearch = useCallback(debounce((searchTerm:string) => search(searchTerm), 500), [])
 
     const handleChange = (e:any) => {
-        const {value: nextValue} = e.target
-        setValue(nextValue)
-        debouncedSearch(nextValue)
+        const {value: nextSearchTerm} = e.target
+        dispatch({type: 'SET_SEARCH', data: nextSearchTerm})
+        debouncedSearch(nextSearchTerm)
     }
 
     return (
@@ -47,7 +47,7 @@ export default function Search({dispatch, results}: SearchProps) {
         <div className='input-container'>
           <input 
             className='search-input' 
-            value={value} 
+            value={searchTerm} 
             onChange={handleChange} 
             placeholder='search a film' 
             autoFocus={true}/>

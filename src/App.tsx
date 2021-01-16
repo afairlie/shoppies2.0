@@ -32,6 +32,9 @@ import {
 
 function reducer(state: State, action: {type: ActionType, data?: any}): State {
   switch(action.type) {
+    case 'SET_SEARCH': {
+      return {...state, searchTerm: action.data}
+    }
     case 'SET_RESULTS': {
       const formattedResults = checkResultsAndNoms(state.nominations, action.data)
       return {...state, results: formattedResults}
@@ -80,7 +83,8 @@ const initialState: State = {
   error: '',
   banner: '',
   loggedIn: '',
-  saved: null
+  saved: null,
+  searchTerm: ''
 }
 
 function App() {
@@ -155,7 +159,7 @@ function App() {
               {state.error && <p style={{color: 'red'}}>{state.error}</p>}
               {state.banner && !state.error && <p style={{color: 'green'}}>{state.banner}</p>}
             </div>
-            <Search dispatch={dispatch} results={state.results}/>
+            <Search dispatch={dispatch} results={state.results} searchTerm={state.searchTerm} />
             <Nominations state={state} dispatch={dispatch} history={history}/>
         </Route>
       </Switch>
