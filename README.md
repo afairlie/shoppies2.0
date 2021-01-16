@@ -1,46 +1,82 @@
-# Getting Started with Create React App
+# Shoppies 2.0
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Description
 
-## Available Scripts
+Shoppies 2.0 is an app where users can vote for their favourite films. The app uses a debounced search to query the [OMDB API](http://www.omdbapi.com/). 
 
-In the project directory, you can run:
+All users can search films, nominate or remove nominations from films. Users receive an alert when they have nominated the maximum 5 films, or an error message is they try to nominate more than 5 films. 
 
+Anonymous users can register, or save new nominations if they have an existing user profile. 
+
+At login, user nominations will be retrieved from the [Shoppies API](https://shoppy-awards-api.herokuapp.com/). Users can edit and save their nominations.
+
+Authorization is handled using JWT tokens with a 5 minute expiration time (no refresh). Saved nominations and the JWT token are persisted in local storage.
+## Tech Stack
+- Typescript
+- React
+- React Router
+- Post CSS
+- Material UI
+- Material Icons
+
+This project was bootstrapped with Create React App.
+## To Setup and Run This Project Locally
+
+### Download or clone the repository:
+### https://github.com/afairlie/shoppies2.0
+### `git clone git@github.com:afairlie/shoppies2.0.git <project_name> && cd <project_name>`
+
+### Install project dependencies:
+### `yarn install`
+
+### Setup environment variables:
+### `cp .env.copy .env && rm .env.copy`
+### In your .env file, replace `<api_key>` with your key from [OMDB API](http://www.omdbapi.com/apikey.aspx)
+### ⚠️ make sure .env is included in your .gitignore before proceeding ⚠️
+### In the project directory, run:
 ### `yarn start`
 
 Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Open [http://localhost:3000](http://localhost:3000) in your favourite browser and enjoy the shoppies!
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Shoppies 2.0 is Deployed on Netlify
 
-### `yarn test`
+### https://shoppies-reloaded.netlify.app/
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## About Shoppies API
 
-### `yarn build`
+Shoppies API is built with Ruby on Rails, Postgres and the JWT gem, and deployed on Heroku. You can learn more about it by visiting the repo:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+https://github.com/afairlie/shoppies_api
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## A Note About Previous Shoppies Iterations
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Shoppies 1.0 and Shoppies API were created for the winter internship application.
+For this summer internship application, Shoppies API was refactored, and Shoppies 2.0 was built from scratch.
 
-### `yarn eject`
+New features of Shoppies 2.0 and the Shoppies API include:
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Frontend:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Correct implementation of debounced search.
+- Client side routing
+- Better architecture / component structure and single purpose helper functions.
+- Persisted state
+- Reducer in lieu of State hook for declarative state updates.
+- Simplified and refined styling using Post CSS CRA infrastructure and leveraging Material UI animations and icons
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Backend:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- JWT auth implemented using rails filter before_action
+- Ability to create/update nominations.
+- Documentation of routes and responses
 
-## Learn More
+If you'd like to see the evolution:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+[Shoppies API Repo - first-iteration branch](https://github.com/afairlie/shoppies_api/tree/shoppies_api.first-iteration])
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+[Shoppies 1.0 Repo](https://github.com/afairlie/shoppies)
+
+[Shoppies 1.0 on Netlify](https://shoppy-awards.netlify.app/)
+
+## Screenshots
