@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import {useLocation} from 'react-router-dom'
 
 // HELPERS
@@ -32,14 +32,16 @@ export default function Login({dispatch, history, state, children}: LoginProps) 
         email: '',
         password: ''
     })
-    useEffect(():any => {
-        let timeout;
-        if(loading === 'logging in') {
-            timeout = setTimeout(() => {
+
+    useEffect(() => {
+        let timeout = setTimeout(() => {
+            if (loading === 'logging in') {
                 setLoading('waking up heroku')
-            }, 1000)
+            }
+        }, 1500)
+        return () => {
+            clearTimeout(timeout)
         }
-        return timeout
     }, [loading])
 
     async function login(e: React.FormEvent<EventTarget>){
