@@ -92,3 +92,5 @@ If you'd like to see the evolution:
 [Shoppies 1.0 on Netlify](https://shoppy-awards.netlify.app/)
 
 ## Screenshots
+![Search](screenshots/shoppies-1.png)
+![Nomination](screenshots/shoppies-1.png)
