@@ -91,12 +91,6 @@ If you'd like to see the evolution:
 
 [Shoppies 1.0 on Netlify](https://shoppy-awards.netlify.app/)
 
-<style>
-img {
- width: 50px;
- }
-</style>
-
 ## Screenshots
 ![Saved Nominations](docs/shoppies-8.png)
 ![Home](docs/shoppies-1.png)
