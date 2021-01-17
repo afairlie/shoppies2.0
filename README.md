@@ -28,7 +28,7 @@ This project was bootstrapped with Create React App.
  
  `unzip shoppies2.0-main.zip`
  
- `mv shoppies2.0-main <project_name>`
+ `mv shoppies2.0-main ./<project_name>`
  
  OR
 
