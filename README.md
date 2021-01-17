@@ -25,6 +25,12 @@ This project was bootstrapped with Create React App.
  Download or fork and clone the repository:
 
  https://github.com/afairlie/shoppies2.0
+ 
+ `unzip shoppies2.0-main.zip`
+ 
+ `mv shoppies2.0-main <project_name>`
+ 
+ OR
 
  `git clone <forked_repository> <project_name>`
  
