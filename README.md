@@ -22,11 +22,11 @@ Authorization is handled using JWT tokens with a 5 minute expiration time (no re
 This project was bootstrapped with Create React App.
 ## To Setup and Run This Project Locally
 
- Download or clone the repository:
+ Download or fork and clone the repository:
 
  https://github.com/afairlie/shoppies2.0
 
- `git clone git@github.com:afairlie/shoppies2.0.git <project_name>`
+ `git clone <forked_repository> <project_name>`
  
  `cd <project_name>`
 
