@@ -92,7 +92,7 @@ If you'd like to see the evolution:
 [Shoppies 1.0 on Netlify](https://shoppy-awards.netlify.app/)
 
 ## Screenshots
-![Saved Nominations](docs/shoppies-8.png){: width='400px'}
+![Saved Nominations](docs/shoppies-8.png | width=100)
 ![Home](docs/shoppies-1.png)
 ![Search](docs/shoppies-2.png)
 ![Nomination](docs/shoppies-3.png)
