@@ -25,6 +25,7 @@ export default function Nominations({state, dispatch, history}: NominationsProps
                     margin: '20px auto',
                     padding: '.2em'
                 } : {color: 'lightGray'}}>nominations</h1>
+                {!state.nominations.length && <h2 style={{color: 'var(--purple)'}}>..add your favourite films to the list!</h2>}
                 <ul>
                     {state.nominations.map((movie: Movie, i: number) => 
                     <li key={i} className='nomination' style={{
