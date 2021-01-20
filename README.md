@@ -91,7 +91,7 @@ Backend:
 
 If you'd like to see the evolution:
 
-[Shoppies API Repo - first-iteration branch](https://github.com/afairlie/shoppies_api/tree/shoppies_api.first-iteration])
+[Shoppies API Repo - first-iteration branch](https://github.com/afairlie/shoppies_api/tree/shoppies_api.first-iteration)
 
 [Shoppies 1.0 Repo](https://github.com/afairlie/shoppies)
 
